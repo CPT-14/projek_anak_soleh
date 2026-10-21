@@ -3,73 +3,60 @@
 
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
-    <h1>Daftar Pesanan 🛒</h1>
-    <p>Pantau bukti transfer dan ubah status pesanan pelanggan Anda di sini.</p>
+    <h1>Kelola Pesanan 🛒</h1>
+    <p>Daftar seluruh pesanan masuk. Klik "Lihat Detail" untuk memvalidasi pembayaran dan mengubah status.</p>
 </div>
 
-<section class="admin-section">
-    <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-                <tr style="border-bottom: 2px solid #eee;">
-                    <th style="padding: 12px; font-weight: 600;">ID / Tanggal</th>
-                    <th style="padding: 12px; font-weight: 600;">Pelanggan</th>
-                    <th style="padding: 12px; font-weight: 600;">Detail Paket</th>
-                    <th style="padding: 12px; font-weight: 600;">Total Harga</th>
-                    <th style="padding: 12px; font-weight: 600;">Bukti TF</th>
-                    <th style="padding: 12px; font-weight: 600;">Status & Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($orders as $order)
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 12px;">
-                        <strong>#{{ $order->id }}</strong><br>
-                        <span style="font-size: 12px; color: gray;">{{ $order->created_at->format('d M Y, H:i') }}</span>
-                    </td>
-                    <td style="padding: 12px;">
-                        {{ $order->user->name ?? 'User Dihapus' }}<br>
-                        <span style="font-size: 12px; color: gray;">{{ $order->user->email ?? '' }}</span>
-                    </td>
-                    <td style="padding: 12px;">
-                        <strong>{{ $order->variant->product->name ?? 'Produk Dihapus' }}</strong><br>
-                        <span style="font-size: 12px; color: gray;">Paket: {{ $order->variant->name ?? '' }} ({{ $order->variant->duration ?? '' }})</span>
-                    </td>
-                    <td style="padding: 12px; font-weight: bold; color: #790D16;">
-                        Rp {{ number_format($order->total_price ?? ($order->variant->price ?? 0), 0, ',', '.') }}
-                    </td>
-                    <td style="padding: 12px;">
-                        @if($order->payment_proof)
-                            <a href="{{ asset('bukti_tf/' . $order->payment_proof) }}" target="_blank" style="color: #0056b3; text-decoration: underline; font-size: 13px; font-weight: bold;">Lihat Foto ↗</a>
-                        @else
-                            <span style="color: gray; font-size: 13px;">Belum ada</span>
-                        @endif
-                    </td>
-                    <td style="padding: 12px;">
-                        <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST" style="display: flex; gap: 8px;">
-                            @csrf
-                            @method('PATCH')
-                            <select name="status" style="padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; background: 
-                                {{ $order->status == 'success' ? '#d4edda' : 
-                                  ($order->status == 'menunggu_konfirmasi' ? '#cce5ff' : 
-                                  ($order->status == 'pending' ? '#fff3cd' : '#f8d7da')) }};">
-                                
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="menunggu_konfirmasi" {{ $order->status == 'menunggu_konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
-                                <option value="success" {{ $order->status == 'success' ? 'selected' : '' }}>Success (Berhasil)</option>
-                                <option value="failed" {{ $order->status == 'failed' ? 'selected' : '' }}>Failed / Batal</option>
-                            </select>
-                            <button type="submit" style="background: #790D16; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">Simpan</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" style="padding: 20px; text-align: center; color: gray;">Belum ada pesanan masuk.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+<section class="admin-section" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
+    <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px;">
+        <thead>
+            <tr style="background: #f8fafc;">
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">ID Pesanan</th>
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Pembeli</th>
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Produk</th>
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Total (Rp)</th>
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Status</th>
+                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($orders as $order): ?>
+            <tr>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: bold;">#ORD-<?php echo e($order->id); ?></td>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;"><?php echo e($order->user->name ?? 'User Dihapus'); ?></td>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
+                    <div style="font-weight: 600; color: #2563eb;"><?php echo e($order->variant->product->name ?? '-'); ?></div>
+                    <div style="font-size: 12px; color: #64748b;"><?php echo e($order->variant->name ?? '-'); ?></div>
+                </td>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #10b981;">
+                    Rp <?php echo e(number_format($order->total_price, 0, ',', '.')); ?>
+
+                </td>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
+                    <?php if($order->status === 'selesai' || strtolower($order->status) === 'success'): ?>
+                        <span style="background: #d1e7dd; color: #0f5132; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Selesai</span>
+                    <?php elseif($order->status === 'menunggu pembayaran'): ?>
+                        <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Menunggu</span>
+                    <?php elseif($order->status === 'diproses'): ?>
+                        <span style="background: #cff4fc; color: #055160; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Diproses</span>
+                    <?php else: ?>
+                        <span style="background: #f8d7da; color: #842029; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;"><?php echo e(ucfirst($order->status)); ?></span>
+                    <?php endif; ?>
+                </td>
+                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
+                    <a href="<?php echo e(route('admin.order.detail', $order->id)); ?>" style="background: #2563eb; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block;">
+                        Lihat Detail &rarr;
+                    </a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            
+            <?php if($orders->count() === 0): ?>
+            <tr>
+                <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8;">Belum ada data pesanan yang masuk.</td>
+            </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
 </section>
 @endsection
