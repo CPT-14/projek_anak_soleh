@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Edit Produk: {{ $product->name }} ✏️</h1>
-    <p>Ubah detail produk utama atau atur ulang tipe paket dan harganya.</p>
+    <p>Kelola detail produk dan varian paket. Untuk menambah stok (Email/Password), klik tombol Kelola Stok pada masing-masing paket.</p>
 </div>
 
 <section class="admin-section" style="border-top: 4px solid #790D16; padding: 20px; background: #fff; border-radius: 12px;">
@@ -13,9 +13,8 @@
         @method('PUT')
         
         <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-            
             <!-- KIRI: PRODUK UTAMA -->
-            <div style="flex: 1; min-width: 300px; background: #fafafa; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+            <div style="flex: 1; min-width: 300px; background: #fafafa; padding: 20px; border-radius: 12px; border: 1px solid #eee; height: fit-content;">
                 <h3 style="font-size: 15px; margin-bottom: 16px;">1. Detail Produk Utama</h3>
                 <div style="margin-bottom: 12px;">
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Nama Produk</label>
@@ -39,41 +38,50 @@
                 </div>
             </div>
 
-            <!-- KANAN: DAFTAR PAKET/VARIAN -->
-            <div style="flex: 1.5; min-width: 400px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
-                <h3 style="font-size: 15px; margin-bottom: 16px;">2. Daftar Paket/Tipe</h3>
+            <!-- KANAN: DAFTAR PAKET -->
+            <div style="flex: 1.5; min-width: 450px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+                <h3 style="font-size: 15px; margin-bottom: 16px;">2. Daftar Paket</h3>
                 
                 <div id="variants-container">
-                    <!-- MENGGUNAKAN PHP NATIVE AGAR KEBAL ERROR COMPILER -->
-                    <?php foreach($product->variants as$variant): ?>
-                    <div class="variant-row" style="display: grid; grid-template-columns: 2fr 1fr 1.5fr auto; gap: 8px; margin-bottom: 12px; align-items: end;">
-                        <input type="hidden" name="variant_id[]" value="{{ $variant->id }}">
-                        <div>
-                            <label style="font-size: 11px; font-weight: 600;">Nama Tipe Paket</label>
-                            <input type="text" name="variant_name[]" value="{{ $variant->name }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                    <?php if(isset($product->variants)): ?>
+                        <?php foreach($product->variants as$variant): ?>
+                        <div class="variant-row" style="background: #fdfdfd; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                            <input type="hidden" name="variant_id[]" value="{{ $variant->id }}">
+                            
+                            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end;">
+                                <div>
+                                    <label style="font-size: 11px; font-weight: 600;">Nama Paket</label>
+                                    <input type="text" name="variant_name[]" value="{{ $variant->name }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; font-weight: 600;">Durasi</label>
+                                    <input type="text" name="variant_duration[]" value="{{ $variant->duration }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; font-weight: 600;">Harga (Rp)</label>
+                                    <input type="number" name="variant_price[]" value="{{ $variant->price }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                                </div>
+                                <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; height: 38px;">Hapus</button>
+                            </div>
+                            
+                            <!-- TOMBOL MENUJU HALAMAN KHUSUS STOK -->
+                            <a href="{{ route('admin.variant.stocks', $variant->id) }}" style="display: inline-block; background: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; margin-top: 5px;">
+                                ⚙️ Kelola Stok Akun
+                            </a>
                         </div>
-                        <div>
-                            <label style="font-size: 11px; font-weight: 600;">Bulan/Durasi</label>
-                            <input type="text" name="variant_duration[]" value="{{ $variant->duration }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
-                        </div>
-                        <div>
-                            <label style="font-size: 11px; font-weight: 600;">Harga (Rp)</label>
-                            <input type="number" name="variant_price[]" value="{{ $variant->price }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
-                        </div>
-                        <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">X</button>
-                    </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
                 
-                <button type="button" id="add-variant-btn" style="background: transparent; border: 1px dashed #790D16; color: #790D16; font-weight: 600; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 8px; width: 100%;">
-                    + Tambah Tipe Paket Lain
+                <button type="button" id="add-variant-btn" style="background: transparent; border: 1px dashed #790D16; color: #790D16; font-weight: 600; padding: 12px 16px; border-radius: 6px; cursor: pointer; margin-top: 8px; width: 100%;">
+                    + Tambah Tipe Paket Baru
                 </button>
             </div>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <div style="display: flex; gap: 12px; margin-top: 24px; position: sticky; bottom: 20px; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;">
             <a href="{{ route('admin.products') }}" style="background: #6c757d; color: white; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center;">Batal</a>
-            <button type="submit" style="background-color: #790D16; color: white; flex: 1; padding: 14px; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; font-weight: 600;">SIMPAN PERUBAHAN</button>
+            <button type="submit" style="background-color: #790D16; color: white; flex: 1; padding: 14px; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; font-weight: 600;">SIMPAN PERUBAHAN PAKET</button>
         </div>
     </form>
 </section>
@@ -83,19 +91,22 @@
         const container = document.getElementById('variants-container');
         const newRow = document.createElement('div');
         newRow.className = 'variant-row';
-        newRow.style = 'display: grid; grid-template-columns: 2fr 1fr 1.5fr auto; gap: 8px; margin-bottom: 12px; align-items: end;';
+        newRow.style = 'background: #fdfdfd; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; margin-bottom: 20px;';
         newRow.innerHTML = `
             <input type="hidden" name="variant_id[]" value="">
-            <div>
-                <input type="text" name="variant_name[]" placeholder="Misal: Family Share" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end;">
+                <div>
+                    <input type="text" name="variant_name[]" placeholder="Nama Paket" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                </div>
+                <div>
+                    <input type="text" name="variant_duration[]" placeholder="Durasi" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                </div>
+                <div>
+                    <input type="number" name="variant_price[]" placeholder="Harga" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
+                </div>
+                <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; height: 38px;">Hapus</button>
             </div>
-            <div>
-                <input type="text" name="variant_duration[]" placeholder="Misal: 3 Bulan" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
-            </div>
-            <div>
-                <input type="number" name="variant_price[]" placeholder="Harga" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
-            </div>
-            <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">X</button>
+            <span style="font-size: 11px; color: #666; font-style: italic;">*Simpan perubahan terlebih dahulu untuk memunculkan tombol Kelola Stok.</span>
         `;
         container.appendChild(newRow);
         

@@ -50,9 +50,13 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
     Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('order.updateStatus');
     Route::get('/customers', [AdminController::class, 'customers'])->name('customers');
     
-    // Rute Stok Gudang
+    // Rute Stok Gudang (General)
     Route::post('/stock', [AdminController::class, 'storeStock'])->name('stock.store');
     Route::delete('/stock/{id}', [AdminController::class, 'destroyStock'])->name('stock.destroy');
+
+    // --- RUTE KHUSUS KELOLA STOK VARIAN (Sudah Diperbaiki) ---
+    Route::get('/variants/{id}/stocks', [AdminController::class, 'manageStocks'])->name('variant.stocks');
+    Route::post('/variants/{id}/stocks', [AdminController::class, 'storeVariantStock'])->name('variant.stocks.store');
 });
 
 require __DIR__.'/auth.php';

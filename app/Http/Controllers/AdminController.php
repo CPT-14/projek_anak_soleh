@@ -5,59 +5,37 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Stock; // <-- PERUBAHAN: Menggunakan Model Stock yang baru
+use App\Models\Stock;
 use App\Models\Order;
 use App\Models\User;
 
 class AdminController extends Controller
 {
     // ==========================================
-    // 1. DASHBOARD / GUDANG
+    // 1. DASHBOARD / STATISTIK PENJUALAN
     // ==========================================
     public function index()
     {
-        $stocks = Stock::with('variant.product')->latest()->get();
-        $variants = ProductVariant::with('product')->get();
+        // Hitung Total Akun Terjual dari Gudang (Pasti Muncul)
+        $totalTerjual = Stock::where('is_available', false)->count(); 
         
-        // --- LOGIKA DASHBOARD STATISTIK ---
-        // Asumsi: Pesanan dianggap berhasil dan jadi uang jika statusnya 'selesai'
-        $totalPesananMasuk = Order::count();
-        $totalTerjual = Order::where('status', 'selesai')->count(); 
-        $totalPendapatan = Order::where('status', 'selesai')->sum('total_price');
+        // Logika tahan banting agar sistem tidak peduli huruf besar/kecil
+        $statusValid = ['selesai', 'Selesai', 'SELESAI', 'success', 'Success', 'berhasil', 'Lunas'];
         
-        return view('admin.dashboard', compact(
-            'stocks', 'variants', 'totalPesananMasuk', 'totalTerjual', 'totalPendapatan'
-        ));
-    }
-
-    public function storeStock(Request $request)
-    {
-        $request->validate([
-            'product_variant_id' => 'required|exists:product_variants,id',
-            'email' => 'nullable|email',
-            'password' => 'nullable|string'
-        ]);
-
-        // <-- PERUBAHAN: Menggunakan Stock::create dan nama kolom yang baru
-        Stock::create([
-            'product_variant_id' => $request->product_variant_id,
-            'account_email' => $request->email,
-            'account_password' => $request->password,
-            'is_available' => true,
-        ]);
-
-        return back()->with('success', 'Akun berhasil ditambahkan ke gudang.');
-    }
-
-    public function destroyStock($id)
-    {
-        // <-- PERUBAHAN: Menggunakan Model Stock
-        Stock::findOrFail($id)->delete();
-        return back()->with('success', 'Akun dihapus dari gudang.');
+        // Hitung Pendapatan
+        $totalPendapatan = Order::whereIn('status', $statusValid)->sum('total_price');
+        
+        // Tarik Kuitansi
+        $soldOrders = Order::with(['user', 'variant.product'])
+                           ->whereIn('status', $statusValid)
+                           ->latest()
+                           ->get();
+        
+        return view('admin.dashboard', compact('totalTerjual', 'totalPendapatan', 'soldOrders'));
     }
 
     // ==========================================
-    // 2. KELOLA PRODUK (ETALASE)
+    // 2. KELOLA PRODUK (INI FUNGSI YANG HILANG TADI)
     // ==========================================
     public function products()
     {
@@ -77,68 +55,26 @@ class AdminController extends Controller
             'variant_price' => 'required|array|min:1',
         ]);
 
-        // Simpan Data Produk Utama
-        $product = Product::create([
-            'name' => $request->name,
-            'category' => $request->category,
-            'image' => $request->image,
-            'description' => $request->description,
-        ]);
+        $product = Product::create($request->only('name', 'category', 'image', 'description'));
 
-        // Simpan Semua Tipe/Paket secara dinamis (Looping)
         foreach ($request->variant_name as $index => $vName) {
             ProductVariant::create([
                 'product_id' => $product->id,
-                'name' => $vName, // Misal: Ultra HD 4K
-                'duration' => $request->variant_duration[$index], // Misal: 1 Bulan
-                'price' => $request->variant_price[$index], // Misal: 50000
+                'name' => $vName,
+                'duration' => $request->variant_duration[$index],
+                'price' => $request->variant_price[$index],
             ]);
         }
 
         return back()->with('success', 'Produk dan Paket berhasil ditambahkan!');
     }
 
-    public function destroy($id)
-    {
-        Product::findOrFail($id)->delete(); // Akan otomatis menghapus varian dan stok berkat Cascade
-        return back()->with('success', 'Produk beserta semua paketnya dihapus.');
-    }
-
-    // ==========================================
-    // 3. KELOLA PESANAN & CUSTOMER
-    // ==========================================
-    public function orders()
-    {
-        $orders = Order::with(['user', 'variant.product'])->latest()->get();
-        return view('admin.orders', compact('orders'));
-    }
-
-    public function customers()
-    {
-        $customers = User::where('role', 'user')->latest()->get();
-        return view('admin.customers', compact('customers'));
-    }
-
-    public function updateOrderStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|string'
-        ]);
-
-        $order = Order::findOrFail($id);
-        $order->update(['status' => $request->status]);
-
-        return back()->with('success', 'Status pesanan berhasil diubah menjadi ' . $request->status . '!');
-    }
-    
-    // Tampilan Form Edit Produk
     public function editProduct($id)
     {
-        $product = Product::with('variants')->findOrFail($id);
+        $product = Product::with(['variants'])->findOrFail($id);
         return view('admin.products_edit', compact('product'));
     }
 
-    // Proses Update Produk & Varian
     public function updateProduct(Request $request, $id)
     {
         $request->validate([
@@ -152,19 +88,12 @@ class AdminController extends Controller
         ]);
 
         $product = Product::findOrFail($id);
-        
-        // 1. Update data produk utama
-        $product->update([
-            'name' => $request->name,
-            'category' => $request->category,
-            'image' => $request->image,
-            'description' => $request->description,
-        ]);
+        $product->update($request->only('name', 'category', 'image', 'description'));
 
-        // 2. Update atau Tambah Varian
         $existingVariantIds = [];
         foreach ($request->variant_name as $index => $vName) {
             $vId = $request->variant_id[$index] ?? null;
+            
             if ($vId) {
                 $variant = ProductVariant::find($vId);
                 if ($variant) {
@@ -186,11 +115,78 @@ class AdminController extends Controller
             }
         }
 
-        // Hapus varian yang dibuang oleh admin saat edit
-        ProductVariant::where('product_id', $product->id)
-            ->whereNotIn('id', $existingVariantIds)
-            ->delete();
+        ProductVariant::where('product_id', $product->id)->whereNotIn('id', $existingVariantIds)->delete();
 
-        return redirect()->route('admin.products')->with('success', 'Produk & Paket berhasil diperbarui!');
+        return redirect()->route('admin.products')->with('success', 'Detail Produk & Paket berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        Product::findOrFail($id)->delete();
+        return back()->with('success', 'Produk beserta semua paketnya dihapus.');
+    }
+
+    // ==========================================
+    // 3. KELOLA PESANAN & CUSTOMER
+    // ==========================================
+    public function orders()
+    {
+        $orders = Order::with(['user', 'variant.product'])->latest()->get();
+        return view('admin.orders', compact('orders'));
+    }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|string']);
+        Order::findOrFail($id)->update(['status' => $request->status]);
+        return back()->with('success', 'Status pesanan berhasil diubah!');
+    }
+
+    public function customers()
+    {
+        $customers = User::where('role', 'user')->latest()->get();
+        return view('admin.customers', compact('customers'));
+    }
+
+   // ==========================================
+    // 4. HALAMAN KHUSUS KELOLA STOK VARIAN
+    // ==========================================
+    public function manageStocks($variantId)
+    {
+        $variant = ProductVariant::with('product')->findOrFail($variantId);
+        
+        // HANYA AMBIL STOK YANG MASIH TERSEDIA SAJA (Sembunyikan yang terjual)
+        $availableStocks = Stock::where('product_variant_id', $variantId)
+                          ->where('is_available', true)
+                          ->latest()
+                          ->get();
+                          
+        return view('admin.stocks_manage', compact('variant', 'availableStocks'));
+    }
+
+    public function storeVariantStock(Request $request, $variantId)
+    {
+        $request->validate([
+            'account_email' => 'nullable|string',
+            'account_password' => 'nullable|string',
+        ]);
+
+        $emailFinal = empty($request->account_email) ? 'hubungi admin' : $request->account_email;
+        $passwordFinal = empty($request->account_password) ? 'no admin' : $request->account_password;
+
+        Stock::create([
+            'product_variant_id' => $variantId,
+            'account_email' => $emailFinal,
+            'account_password' => $passwordFinal,
+            'is_available' => true,
+        ]);
+
+        return back()->with('success', 'Stok akun baru berhasil ditambahkan!');
+    }
+
+    public function destroyStock($id)
+    {
+        Stock::findOrFail($id)->delete();
+        return back()->with('success', 'Stok akun berhasil dihapus!');
     }
 }

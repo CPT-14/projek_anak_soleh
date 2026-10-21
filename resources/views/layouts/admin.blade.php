@@ -81,7 +81,7 @@
                 <!-- Tombol Tutup (X) -->
                 <button class="close-btn" id="closeSidebar">✕</button>
                 <a href="{{ route('home') }}" class="logo-container">
-                    <div class="logo-icon">#</div>
+                    <div class="logo-icon">❖</div>
                     <div class="logo-text">QITSPREM</div>
                 </a>
             </div>
