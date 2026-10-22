@@ -35,7 +35,7 @@ class AdminController extends Controller
     }
 
     // ==========================================
-    // 2. KELOLA PRODUK (INI FUNGSI YANG HILANG TADI)
+    // 2. KELOLA PRODUK 
     // ==========================================
     public function products()
     {
@@ -138,22 +138,26 @@ class AdminController extends Controller
     // --- FUNGSI BARU UNTUK HALAMAN DETAIL PESANAN ---
     public function showOrder($id)
     {
-        // Tarik detail pesanan beserta data user dan produknya
         $order = Order::with(['user', 'variant.product'])->findOrFail($id);
         return view('admin.order_detail', compact('order'));
     }
-    // ------------------------------------------------
 
     public function updateOrderStatus(Request $request, $id)
     {
         $request->validate(['status' => 'required|string']);
         Order::findOrFail($id)->update(['status' => $request->status]);
         
-        // Tetap gunakan back() agar kembali ke halaman yang sama (Detail Pesanan)
         return back()->with('success', 'Status pesanan berhasil diubah!');
     }
 
-   // ==========================================
+    // --- INI FUNGSI CUSTOMERS YANG SEBELUMNYA HILANG ---
+    public function customers()
+    {
+        $customers = User::where('role', 'user')->latest()->get();
+        return view('admin.customers', compact('customers'));
+    }
+
+    // ==========================================
     // 4. HALAMAN KHUSUS KELOLA STOK VARIAN
     // ==========================================
     public function manageStocks($variantId)

@@ -25,6 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/{id}', [UserController::class, 'payment'])->name('payment');
     Route::post('/payment/{id}/upload', [UserController::class, 'uploadPayment'])->name('payment.upload');
     
+    // --- RUTE DETAIL PESANAN USER (BARU DITAMBAHKAN) ---
+    Route::get('/order/detail/{id}', [UserController::class, 'showOrderDetail'])->name('order.detail.user');
+    
     // Dashboard & Profile User
     Route::get('/dashboard', [UserController::class, 'myOrders'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

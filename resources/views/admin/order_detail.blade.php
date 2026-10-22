@@ -28,7 +28,6 @@
             <table style="width: 100%; font-size: 14px;">
                 <tr><td style="padding: 8px 0; color: #64748b; width: 130px;">Nama Akun</td><td style="font-weight: 600;">: {{ $order->user->name ?? 'N/A' }}</td></tr>
                 <tr><td style="padding: 8px 0; color: #64748b;">Email Akun</td><td style="font-weight: 600;">: {{ $order->user->email ?? 'N/A' }}</td></tr>
-                <!-- INI DATA DARI PAYMENT LAYER 1 YANG SEBELUMNYA HILANG -->
                 <tr><td style="padding: 8px 0; color: #64748b;">No. WhatsApp</td><td style="font-weight: 900; color: #2563eb; font-size: 15px;">: {{ $order->whatsapp ?? 'Tidak diisi' }}</td></tr>
                 <tr><td style="padding: 8px 0; color: #64748b;">Tanggal Pesan</td><td style="font-weight: 600;">: {{ $order->created_at->format('d M Y, H:i') }}</td></tr>
             </table>
@@ -40,7 +39,6 @@
             <table style="width: 100%; font-size: 14px;">
                 <tr><td style="padding: 8px 0; color: #64748b; width: 130px;">Produk</td><td style="font-weight: bold; color: #1e293b;">: {{ $order->variant->product->name ?? 'Produk Dihapus' }}</td></tr>
                 <tr><td style="padding: 8px 0; color: #64748b;">Tipe Paket</td><td style="font-weight: 600;">: {{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})</td></tr>
-                <!-- INI DATA DARI PAYMENT LAYER 1 YANG SEBELUMNYA HILANG -->
                 <tr><td style="padding: 8px 0; color: #64748b;">Metode Bayar</td><td style="font-weight: 800; text-transform: uppercase; color: #f59e0b;">: {{ $order->payment_method ?? '-' }}</td></tr>
                 <tr><td style="padding: 8px 0; color: #64748b;">Total Harga</td><td style="font-weight: 900; color: #10b981; font-size: 16px;">: Rp {{ number_format($order->total_price, 0, ',', '.') }}</td></tr>
             </table>
@@ -78,10 +76,12 @@
             <h3 style="margin-bottom: 16px; font-size: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">🧾 Bukti Pembayaran</h3>
             
             <?php if(!empty($order->payment_proof)): ?>
-                <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank">
-                    <img src="{{ asset('storage/' . $order->payment_proof) }}" alt="Bukti Pembayaran" style="width: 100%; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px; object-fit: contain; background: #f8fafc;">
-                </a>
-                <p style="font-size: 11px; text-align: center; color: #64748b; margin-top: 8px;">Klik gambar untuk melihat ukuran penuh</p>
+                <div style="text-align: center;">
+                    <a href="{{ asset('storage/bukti_tf/' . $order->payment_proof) }}" target="_blank" style="display: inline-block;">
+                        <img src="{{ asset('storage/bukti_tf/' . $order->payment_proof) }}" alt="Bukti Transfer" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover;">
+                    </a>
+                    <p style="font-size: 11px; text-align: center; color: #64748b; margin-top: 8px;">Klik gambar untuk melihat ukuran penuh</p>
+                </div>
             <?php else: ?>
                 <div style="background: #f8fafc; padding: 30px 20px; text-align: center; border-radius: 8px; border: 1px dashed #cbd5e1;">
                     <span style="font-size: 24px;">📄</span>
