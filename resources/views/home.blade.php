@@ -5,25 +5,32 @@
 @section('styles')
 <style>
     /* --- MAIN CONTENT KHUSUS HOME --- */
-    .home-container { max-width: 1250px; margin: 0 auto; padding: 20px; } 
+    .home-container { 
+        max-width: 1250px; 
+        margin: 0 auto; 
+        padding: 20px; 
+    } 
     
-    /* --- BANNER SLIDER (BARU) --- */
+    /* --- BANNER SLIDER (DIBUAT FIT & RESPONSIVE) --- */
     .banner-container {
         position: relative;
+        width: 100%;
         max-width: 1250px;
         margin: 0 auto 30px auto;
         border-radius: 16px;
         overflow: hidden;
         background-color: #f0f0f0;
-        height: 350px; /* Sesuaikan tinggi banner */
+        aspect-ratio: 21 / 9; /* Rasio lebar dibanding tinggi (Standar banner) */
+        height: auto; 
     }
     .slide {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
         opacity: 0;
         transition: opacity 1s ease-in-out;
-        background-size: cover;
+        background-size: 100% 100%; /* Memaksa gambar fit sepenuhnya tanpa terpotong */
         background-position: center;
+        background-repeat: no-repeat;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -50,9 +57,9 @@
     }
     .dot.active { background: white; }
 
-    /* --- SEARCH SECTION MERAH (BARU) --- */
+    /* --- SEARCH SECTION MERAH --- */
     .search-band {
-        background-color: #790D16; /* Warna merah gelap sesuai desain */
+        background-color: #790D16; 
         padding: 30px 20px;
         margin-bottom: 40px;
     }
@@ -61,7 +68,10 @@
         max-width: 800px;
         margin: 0 auto;
     }
-    .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999; font-size: 16px; }
+    .search-icon { 
+        position: absolute; left: 16px; top: 50%; transform: translateY(-50%); 
+        color: #999; font-size: 16px; 
+    }
     .search-input { 
         width: 100%; padding: 16px 20px 16px 45px; 
         border: none; border-radius: 8px; 
@@ -69,7 +79,7 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     
-    /* --- RECENT CHIPS (BARU) --- */
+    /* --- RECENT CHIPS --- */
     .recent-chips-container {
         max-width: 800px;
         margin: 20px auto 0 auto;
@@ -79,21 +89,28 @@
         justify-content: center;
     }
     .recent-chip {
-        background: white;
-        color: #790D16;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: 600;
+        background: white; color: #790D16;
+        padding: 8px 20px; border-radius: 4px;
+        font-size: 13px; font-weight: 600;
         text-decoration: none;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         transition: 0.2s;
     }
     .recent-chip:hover { background: #f8f9fa; transform: translateY(-2px); }
 
-    /* --- KATEGORI PILLS & GRID (ASLI) --- */
-    .categories { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
-    .kategori-btn { padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+    /* --- KATEGORI PILLS --- */
+    .categories { 
+        display: flex; gap: 12px; margin-bottom: 32px; 
+        flex-wrap: wrap; 
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px; 
+    }
+    .kategori-btn { 
+        padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; 
+        cursor: pointer; border: none; transition: 0.2s; 
+        white-space: nowrap; 
+    }
     .kategori-btn.active { background-color: #790D16; color: white; }
     .kategori-btn.inactive { background-color: transparent; color: #555; }
     .kategori-btn.inactive:hover { background-color: #f0f0f0; }
@@ -101,45 +118,90 @@
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .section-title { font-size: 18px; font-weight: 700; }
     
-    .product-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-    @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+    /* --- PRODUCT GRID RESPONSIVE (DIUBAH JADI 2 KOLOM DI HP) --- */
+    .product-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); /* Langsung 2 kolom di layar HP */
+        gap: 12px; 
+    }
+    
+    @media (min-width: 768px) { 
+        .product-grid { 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+        } 
+    }
+    @media (min-width: 1024px) { 
+        .product-grid { 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 24px; 
+        } 
+    }
 
-    /* -- PERUBAHAN DESAIN KARTU PRODUK -- */
+    /* -- KARTU PRODUK -- */
     .product-card { 
-        background-color: #f4f6f8; /* Warna abu-abu terang seperti di gambar */
+        background-color: #f4f6f8; 
         border: 1px solid #eee; 
-        border-radius: 16px; 
+        border-radius: 12px; 
         display: flex; 
         flex-direction: column; 
         box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
         transition: transform 0.2s; 
-        overflow: hidden; /* Penting: agar gambar mengikuti sudut melengkung kartu */
+        overflow: hidden; 
     }
     .product-card:hover { transform: translateY(-3px); }
     
     .product-icon { 
         width: 100%; 
-        height: 220px; /* Sedikit dilebarkan tingginya */
+        height: 140px; 
         object-fit: cover; 
-        background-color: white; /* Latar belakang gambar jadi putih */
-        /* Border radius bawah dihilangkan agar menyatu dengan info */
-        border-bottom-left-radius: 0; 
-        border-bottom-right-radius: 0; 
-        margin-bottom: 0; /* Margin dihilangkan */
+        background-color: white; 
     }
     
     .product-info { 
-        flex: 1; 
-        display: flex; 
-        flex-direction: column; 
-        padding: 20px; /* Padding dipindah ke sini agar teks tidak mepet ujung */
+        flex: 1; display: flex; flex-direction: column; 
+        padding: 12px; 
     }
-    .product-name { font-size: 19px; font-weight: 700; color: #111; margin-bottom: 6px; } 
-    .product-desc { font-size: 14px; color: #777; line-height: 1.6; margin-bottom: 12px; flex-grow: 1; } 
-    .product-price { font-size: 18px; font-weight: 800; color: #790D16; margin-bottom: 16px; }
+    .product-name { 
+        font-size: 14px; 
+        font-weight: 700; color: #111; margin-bottom: 4px; 
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    } 
+    .product-desc { 
+        font-size: 11px; color: #777; line-height: 1.4; margin-bottom: 8px; 
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    } 
+    .product-price { 
+        font-size: 14px; font-weight: 800; color: #790D16; margin-bottom: 8px; 
+    }
     .btn-detail { 
-        background-color: #790D16; color: white; border: none; padding: 10px 28px;
-        border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; align-self: flex-start;
+        background-color: #790D16; color: white; border: none; 
+        padding: 8px 16px; 
+        border-radius: 20px; font-size: 11px; font-weight: 600; 
+        cursor: pointer; text-decoration: none; text-align: center;
+        width: 100%; 
+    }
+
+    @media (min-width: 768px) {
+        .product-icon { height: 200px; }
+        .product-info { padding: 20px; }
+        .product-name { font-size: 18px; -webkit-line-clamp: unset; }
+        .product-desc { font-size: 13px; -webkit-line-clamp: 3; }
+        .product-price { font-size: 18px; }
+        .btn-detail { width: auto; align-self: flex-start; padding: 10px 24px; font-size: 13px; }
+    }
+
+    /* --- RESPONSIVE MEDIA QUERIES (MOBILE) --- */
+    @media (max-width: 768px) {
+        .banner-container {
+            border-radius: 8px; 
+            margin-bottom: 20px;
+        }
+        .search-band {
+            padding: 20px 15px;
+            margin-bottom: 25px;
+        }
+        .home-container { padding: 10px; }
     }
 </style>
 @endsection
@@ -154,39 +216,32 @@
 @endif  
 
 <div class="banner-container">
-        <!-- Slide 1 -->
-        <div class="slide active" style="background-image: url('{{ asset('images/banner1.jpeg') }}');">
-            <!-- Kosongkan teks di sini jika di dalam foto sudah ada tulisannya -->
-        </div>
-        
-        <!-- Slide 2 -->
-        <div class="slide" style="background-image: url('{{ asset('images/banner2.jpeg') }}');">
-        </div>
-        
-        <!-- Slide 3 -->
-        <div class="slide" style="background-image: url('{{ asset('images/banner3.jpeg') }}');">
-        </div>
+    <!-- Slide 1 -->
+    <div class="slide active" style="background-image: url('{{ asset('images/banner1.jpeg') }}');"></div>
+    
+    <!-- Slide 2 -->
+    <div class="slide" style="background-image: url('{{ asset('images/banner2.jpeg') }}');"></div>
+    
+    <!-- Slide 3 -->
+    <div class="slide" style="background-image: url('{{ asset('images/banner3.jpeg') }}');"></div>
 
-        <div class="banner-dots">
-            <span class="dot active" onclick="setSlide(0)"></span>
-            <span class="dot" onclick="setSlide(1)"></span>
-            <span class="dot" onclick="setSlide(2)"></span>
-        </div>
+    <div class="banner-dots">
+        <span class="dot active" onclick="setSlide(0)"></span>
+        <span class="dot" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
     </div>
+</div>
 
 <!-- BAND PENCARIAN & RECENT (BACKGROUND MERAH PENUH) -->
 <div class="search-band">
     <div class="search-container">
         <span class="search-icon">🔍</span>
-        <!-- Fitur Search Hiasan -->
         <input type="text" class="search-input" placeholder="Cari layanan premium...">
     </div>
     
-    <!-- LOGIKA TAMPIL RECENT VIEWS JIKA ADA (1 - 5 KOTAK) -->
     @if(isset($recentViews) && count($recentViews) > 0)
         <div class="recent-chips-container">
             @foreach($recentViews as $recent)
-                <!-- Tombol ini mengarah langsung ke produk yang pernah dilihat -->
                 <a href="{{ route('product.detail', $recent['id']) }}" class="recent-chip">
                     {{ $recent['name'] }}
                 </a>
@@ -275,17 +330,16 @@
     }
 
     function setSlide(index) {
-        clearInterval(slideInterval); // Reset timer kalau user klik manual
+        clearInterval(slideInterval);
         showSlide(index);
-        slideInterval = setInterval(nextSlide, 7000); // Mulai lagi 7 detiknya
+        slideInterval = setInterval(nextSlide, 7000);
     }
 
-    // Jalankan interval otomatis
     if(slides.length > 0) {
         slideInterval = setInterval(nextSlide, 7000);
     }
 
-    // --- 2. SCRIPT FILTER KATEGORI ASLI ANDA ---
+    // --- 2. SCRIPT FILTER KATEGORI ---
     const categoryBtns = document.querySelectorAll('.kategori-btn');
     const productCards = document.querySelectorAll('.product-card');
 

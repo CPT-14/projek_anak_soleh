@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Edit Produk: {{ $product->name }} ✏️</h1>
-    <p>Kelola detail produk dan varian paket. Untuk menambah stok (Email/Password), klik tombol Kelola Stok pada masing-masing paket.</p>
+    <p>.</p>
 </div>
 
 <section class="admin-section" style="border-top: 4px solid #790D16; padding: 20px; background: #fff; border-radius: 12px;">

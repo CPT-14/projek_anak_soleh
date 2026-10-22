@@ -2,13 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@yield('title', 'Admin Panel') - QITSPREM</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            /* TEMA WARNA KHUSUS ANDA */
             --bg-color: #FCF1D0; 
             --header-bg: #790D16;
             --text-main: #222222;
@@ -24,21 +23,25 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; }
 
-        .app-layout { display: flex; min-height: 100vh; width: 100%; overflow-x: hidden; }
+        .app-layout { display: flex; min-height: 100vh; width: 100%; overflow-x: hidden; position: relative; }
 
-        /* --- SIDEBAR PERMANEN --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: 260px; background-color: #790D16; border-right: 1px solid var(--card-border);
             display: flex; flex-direction: column; padding: 24px 16px;
-            transition: margin-left 0.3s ease; flex-shrink: 0; height: 100vh; position: sticky; top: 0; z-index: 100;
+            transition: left 0.3s ease; flex-shrink: 0; height: 100vh; position: sticky; top: 0; z-index: 1000;
         }
-        .sidebar.hidden { margin-left: -260px; }
 
         .sidebar-header { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; padding-left: 8px; }
-        .close-btn { background: none; border: none; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.2s; }
-        .logo-container { display: flex; align-items: center; gap: 8px; text-decoration: none; }
-        .logo-icon { width: 28px; height: 28px; background-color: var(--brand-color); border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #790D16; font-size: 16px; font-weight: bold; }
-        .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: #fff; }
+        
+        .close-btn { 
+            display: none; 
+            background: none; border: none; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.2s; 
+        }
+        
+        .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-icon { width: 28px; height: 28px; background-color: var(--brand-color); border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #790D16; font-size: 16px; font-weight: bold; flex-shrink: 0; }
+        .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: #fff; white-space: nowrap; }
 
         .sidebar-section-title { font-size: 11px; font-weight: 600; color: #fff; letter-spacing: 0.5px; margin: 20px 0 8px 12px; }
         .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 14px; font-weight: 500; transition: 0.2s; cursor: pointer; width: 100%; }
@@ -48,12 +51,16 @@
 
         /* --- AREA KANAN --- */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; overflow-y: auto; }
-        .top-header { background-color: var(--header-bg); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .top-header { background-color: var(--header-bg); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
         
-        .menu-toggle { background: none; border: none; font-size: 24px; cursor: pointer; color: #fff; display: none; margin-right: 16px; }
-        .sidebar.hidden ~ .main-wrapper .top-header .menu-toggle { display: block; }
+        /* Bagian Kiri Header (Hamburger + Logo untuk HP) */
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .menu-toggle { background: none; border: none; font-size: 22px; cursor: pointer; color: #fff; display: none; }
 
-        .profile-menu-container { position: relative; display: flex; align-items: center; margin-left: auto; }
+        /* Sembunyikan Logo di Header saat Desktop, Tampilkan saat Mode HP */
+        .header-logo { display: none; }
+
+        .profile-menu-container { position: relative; display: flex; align-items: center; }
         .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ccc; overflow: hidden; border: 2px solid white; cursor: pointer; padding: 0; outline: none; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .dropdown-menu { position: absolute; top: 48px; right: 0; background-color: #1f2937; border-radius: 6px; width: 160px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: none; flex-direction: column; overflow: hidden; z-index: 999; }
@@ -71,14 +78,44 @@
         .btn { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
         .btn-primary { background-color: #790D16; color: white; }
         .btn-danger { background-color: var(--badge-red-text); color: white; padding: 6px 12px; font-size: 12px; }
+
+        /* --- Overlay Latar Gelap --- */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); z-index: 999;
+            display: none; opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        /* --- PENGATURAN LAYAR HP (MOBILE) --- */
+        @media (max-width: 768px) {
+            .sidebar { 
+                position: fixed; 
+                left: -260px; 
+            }
+            .sidebar.active {
+                left: 0; 
+            }
+            .main-wrapper {
+                width: 100%;
+            }
+            .menu-toggle { display: block; } /* Munculkan hamburger */
+            .close-btn { display: block; } /* Munculkan tanda X di sidebar */
+            .header-logo { display: flex; } /* Munculkan logo dan teks QITSPREM di header */
+            
+            .sidebar-overlay.active { display: block; opacity: 1; }
+            .container { padding: 16px; }
+            .top-header { padding: 16px 16px; }
+        }
     </style>
+    @yield('styles')
 </head>
 <body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="app-layout">
         <aside class="sidebar" id="sidebarMenu">
             <div class="sidebar-header">
-                <!-- Tombol Tutup (X) -->
                 <button class="close-btn" id="closeSidebar">✕</button>
                 <a href="{{ route('home') }}" class="logo-container">
                     <div class="logo-icon">❖</div>
@@ -87,8 +124,6 @@
             </div>
 
             <div class="sidebar-section-title">MENU UTAMA</div>
-            
-            <!-- Link sudah diperbaiki ke rute masing-masing (BUKAN #) -->
             <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <span class="sidebar-icon">🏠</span> Dashboard
             </a>
@@ -116,11 +151,17 @@
 
         <div class="main-wrapper">
             <header class="top-header">
-                <!-- Tombol Buka (Hamburger) -->
-                <button class="menu-toggle" id="openSidebar">☰</button>
+                <!-- Bagian Kiri: Tombol Hamburger + Logo & Tulisan QITSPREM (Muncul di HP) -->
+                <div class="header-left">
+                    <button class="menu-toggle" id="openSidebar">☰</button>
+                    <a href="{{ route('admin.dashboard') }}" class="logo-container header-logo">
+                        <div class="logo-icon">❖</div>
+                        <div class="logo-text">QITSPREM</div>
+                    </a>
+                </div>
                 
+                <!-- Bagian Kanan: Profil Admin -->
                 <div class="profile-menu-container">
-                    <span style="margin-right: 12px; font-size: 13px; font-weight: 500; color: #fff;">Admin Profile</span>
                     <button class="user-avatar" id="profile-btn">
                         <img src="https://ui-avatars.com/api/?name=Admin+Profile&background=333&color=fff" alt="Avatar">
                     </button>
@@ -142,16 +183,13 @@
                     <div class="alert alert-danger">❌ Terdapat kesalahan input data. Periksa kembali form Anda.</div>
                 @endif
 
-                <!-- KONTEN MODULAR (Gudang, Produk, dll) AKAN MUNCUL DI SINI -->
                 @yield('content')
             </main>
         </div>
     </div>
 
-    <!-- JavaScript Anti-Error untuk Sidebar & Dropdown -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Dropdown Profil
             const profileBtn = document.getElementById('profile-btn');
             const dropdownMenu = document.getElementById('dropdown-menu');
             if(profileBtn && dropdownMenu) {
@@ -164,9 +202,27 @@
                 });
             }
 
-            // Animasi Buka/Tutup Sidebar
             const sidebarMenu = document.getElementById('sidebarMenu');
             const openSidebarBtn = document.getElementById('openSidebar');
             const closeSidebarBtn = document.getElementById('closeSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-            if(openSidebarBtn &&
+            function openSidebar() {
+                sidebarMenu.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebarMenu.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if(openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+            if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+            if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        });
+    </script>
+    
+    @yield('scripts')
+</body>
+</html>

@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Dashboard Penjualan 📈</h1>
-    <p>Ringkasan performa pendapatan dan riwayat akun yang telah berhasil terjual.</p>
+    <p>.</p>
 </div>
 
 <!-- KOTAK STATISTIK PENJUALAN -->

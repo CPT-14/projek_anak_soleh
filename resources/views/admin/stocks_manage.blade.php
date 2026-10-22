@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Kelola Stok: {{ $variant->product->name }} ({{ $variant->name }}) 🔐</h1>
-    <p>Di sinilah Anda menambah stok email dan password secara khusus.</p>
+    <p>.</p>
 </div>
 
 <a href="{{ route('admin.product.edit', $variant->product->id) }}" style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; color: #790D16; font-weight: bold; text-decoration: none;">

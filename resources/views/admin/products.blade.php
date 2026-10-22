@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Kelola Etalase Produk 📦</h1>
-    <p>Tambah produk dengan sistem multi-paket/tipe (Contoh: Netflix 4K, Canva Pro, dll).</p>
+    <p>.</p>
 </div>
 
 <!-- FORM MULTI-VARIAN (2 KOLOM) -->

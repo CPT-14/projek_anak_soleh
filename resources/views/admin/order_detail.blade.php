@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Detail Pesanan: #ORD-{{ $order->id }} 🔍</h1>
-    <p>Validasi data pembayaran pembeli dan ubah status pesanan di sini.</p>
+    <p>.</p>
 </div>
 
 <a href="{{ route('admin.orders') }}" style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; color: #790D16; font-weight: bold; text-decoration: none;">

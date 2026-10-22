@@ -1,62 +1,119 @@
 @extends('layouts.admin')
 @section('title', 'Kelola Pesanan')
 
+@section('styles')
+<style>
+    /* Card Pesanan Model Vertikal (Nyaman di HP & Laptop) */
+    .order-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        transition: transform 0.2s;
+    }
+    .order-card:hover {
+        border-color: #cbd5e1;
+    }
+    @media (min-width: 768px) {
+        .order-card {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+    
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+    .status-selesai { background: var(--badge-green-bg); color: var(--badge-green-text); }
+    .status-menunggu { background: #fffbeb; color: #b45309; }
+    .status-diproses { background: #eff6ff; color: #1d4ed8; }
+    .status-batal { background: var(--badge-red-bg); color: var(--badge-red-text); }
+    
+    .btn-detail {
+        background: #790D16;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        display: inline-block;
+        text-align: center;
+        transition: 0.2s;
+        box-shadow: 0 4px 10px rgba(121, 13, 22, 0.15);
+    }
+    .btn-detail:hover {
+        background: #5e0911;
+        transform: translateY(-1px);
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="welcome-section" style="margin-bottom: 24px;">
-    <h1>Kelola Pesanan 🛒</h1>
-    <p>Daftar seluruh pesanan masuk. Klik "Lihat Detail" untuk memvalidasi pembayaran dan mengubah status.</p>
+<div style="margin-bottom: 24px;">
+    <h1 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">Kelola Pesanan 🛒</h1>
+    <p style="color: #64748b; font-size: 14px;">.</p>
 </div>
 
-<section class="admin-section" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-    <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px;">
-        <thead>
-            <tr style="background: #f8fafc;">
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">ID Pesanan</th>
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Pembeli</th>
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Produk</th>
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Total (Rp)</th>
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Status</th>
-                <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($orders as $order): ?>
-            <tr>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: bold;">#ORD-<?php echo e($order->id); ?></td>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;"><?php echo e($order->user->name ?? 'User Dihapus'); ?></td>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
-                    <div style="font-weight: 600; color: #2563eb;"><?php echo e($order->variant->product->name ?? '-'); ?></div>
-                    <div style="font-size: 12px; color: #64748b;"><?php echo e($order->variant->name ?? '-'); ?></div>
-                </td>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #10b981;">
-                    Rp <?php echo e(number_format($order->total_price, 0, ',', '.')); ?>
-
-                </td>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
-                    <?php if($order->status === 'selesai' || strtolower($order->status) === 'success'): ?>
-                        <span style="background: #d1e7dd; color: #0f5132; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Selesai</span>
-                    <?php elseif($order->status === 'menunggu pembayaran'): ?>
-                        <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Menunggu</span>
-                    <?php elseif($order->status === 'diproses'): ?>
-                        <span style="background: #cff4fc; color: #055160; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Diproses</span>
-                    <?php else: ?>
-                        <span style="background: #f8d7da; color: #842029; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;"><?php echo e(ucfirst($order->status)); ?></span>
-                    <?php endif; ?>
-                </td>
-                <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
-                    <a href="<?php echo e(route('admin.order.detail', $order->id)); ?>" style="background: #2563eb; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block;">
-                        Lihat Detail &rarr;
-                    </a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
+@forelse($orders as $order)
+    <div class="order-card">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                <span style="font-weight: 800; font-size: 16px; color: #1e293b;">#ORD-{{ $order->id }}</span>
+                
+                @php
+                    $status = strtolower($order->status);
+                    if($status === 'selesai' || $status === 'success') {
+                        $badgeClass = 'status-selesai';
+                        $statusText = 'Selesai';
+                    } elseif($status === 'menunggu pembayaran') {
+                        $badgeClass = 'status-menunggu';
+                        $statusText = 'Menunggu';
+                    } elseif($status === 'diproses') {
+                        $badgeClass = 'status-diproses';
+                        $statusText = 'Diproses';
+                    } else {
+                        $badgeClass = 'status-batal';
+                        $statusText = $status;
+                    }
+                @endphp
+                <span class="status-badge {{ $badgeClass }}">{{ $statusText }}</span>
+            </div>
             
-            <?php if($orders->count() === 0): ?>
-            <tr>
-                <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8;">Belum ada data pesanan yang masuk.</td>
-            </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</section>
+            <div style="font-size: 14px; color: #334155; margin-bottom: 4px;">
+                <strong>Pembeli:</strong> {{ $order->user->name ?? 'User Dihapus' }} <span style="color: #94a3b8;">({{ $order->user->email ?? '-' }})</span>
+            </div>
+            
+            <div style="font-size: 14px; color: #475569; margin-bottom: 6px;">
+                <strong>Produk:</strong> <span style="color: #790D16; font-weight: 700;">{{ $order->variant->product->name ?? '-' }}</span> — {{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})
+            </div>
+            
+            <div style="font-size: 13px; color: #94a3b8;">
+                Tanggal: {{ $order->created_at->format('d M Y, H:i') }} | Total: <strong style="color: #10b981;">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>
+            </div>
+        </div>
+
+        <div>
+            <a href="{{ route('admin.order.detail', $order->id) }}" class="btn-detail">
+                Lihat Detail &rarr;
+            </a>
+        </div>
+    </div>
+@empty
+    <div style="background: #fff; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 40px; text-align: center;">
+        <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
+        <p style="color: #64748b; font-size: 15px; margin: 0;">Belum ada data pesanan yang masuk.</p>
+    </div>
+@endforelse
 @endsection

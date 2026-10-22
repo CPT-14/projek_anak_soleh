@@ -147,4 +147,4 @@ class UserController extends Controller
 
         return back()->with('success', 'Bukti transfer berhasil diperbarui! Mohon tunggu konfirmasi admin.');
     }
-}
+}   

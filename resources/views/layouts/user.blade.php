@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Yield Title untuk Judul Halaman yang Dinamis -->
+    <!-- Tag Viewport Mutlak untuk Responsivitas HP -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <title>@yield('title', 'QITSPREM')</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,8 +22,48 @@
             --border-color: #eaeaea;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; word-break: break-word; }
         body { background-color: var(--bg-body); color: var(--text-dark); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+        /* ========================================================
+           SISTEM FLEX UI & RESPONSIVE GLOBAL (BARU DITAMBAHKAN)
+           ======================================================== */
+        .container-responsive {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 16px;
+        }
+
+        .table-responsive table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        @media (max-width: 768px) {
+            /* Ubah baris jadi kolom di HP */
+            .flex-desktop-row {
+                flex-direction: column !important;
+                gap: 16px !important;
+            }
+            .hide-on-mobile {
+                display: none !important;
+            }
+            /* Optimalisasi tombol dan input untuk jempol */
+            input, select, button, .btn {
+                min-height: 44px;
+                font-size: 14px !important;
+            }
+        }
+        /* ======================================================== */
 
         /* HEADER & SIDEBAR */
         header { background-color: #790D16; padding: 16px 1.5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ebd5d8; }
@@ -72,7 +113,6 @@
         .btn-login-outline:hover { background: white; color: var(--brand-hover); }
     </style>
     
-    <!-- Yield CSS Khusus Halaman (Jika ada) -->
     @yield('styles')
 
 </head>
@@ -130,7 +170,7 @@
             
             <a href="{{ route('home') }}" class="brand">
                 <span class="brand-icon">❖</span>
-                <span>QITSPREM</span>
+                <span class="hide-on-mobile">QITSPREM</span>
             </a>
         </div>
 
@@ -139,7 +179,7 @@
             <div class="header-profile" onclick="toggleProfilePopup(event)">
                 <div class="profile-btn">
                     <i class="fa-solid fa-user-circle"></i> 
-                    <span>{{ Auth::user()->name }}</span>
+                    <span class="hide-on-mobile">{{ Auth::user()->name }}</span>
                     <i class="fa-solid fa-chevron-down" style="font-size: 11px; margin-left: 2px;"></i>
                 </div>
                 
@@ -196,7 +236,6 @@
         });
     </script>
     
-    <!-- Yield Script Khusus Halaman (Jika ada) -->
     @yield('scripts')
 
 </body>

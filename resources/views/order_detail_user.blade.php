@@ -3,7 +3,7 @@
 @section('title', 'Detail Pesanan #' . $order->order_number)
 
 @section('content')
-<div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+<div class="container-responsive" style="max-width: 900px; margin: 20px auto;">
     
     <a href="{{ route('dashboard') }}" style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; color: #790D16; font-weight: bold; text-decoration: none;">
         &larr; Kembali ke Riwayat Pesanan
@@ -15,61 +15,64 @@
         </div>
     @endif
 
-    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+    <!-- DI SINI KITA GUNAKAN KELAS FLEX-DESKTOP-ROW AGAR DI HP MENJADI 1 KOLOM -->
+    <div class="flex-desktop-row" style="display: flex; gap: 24px;">
         
         <!-- KOLOM KIRI: RINCIAN PESANAN -->
-        <div style="flex: 1.2; min-width: 300px; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div style="flex: 1.2; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%;">
             <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; color: #1e293b;">
                 📄 Rincian Pesanan
             </h3>
 
-            <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">No Transaksi</td>
-                    <td style="font-weight: 800; color: #1e293b;">: #{{ $order->order_number }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Status Pesanan</td>
-                    <td>: 
-                        @php
-                            $status = strtolower($order->status);
-                            $badgeBg = $status == 'selesai' ? '#d1e7dd' : ($status == 'dibatalkan' ? '#f8d7da' : '#fff3cd');
-                            $badgeColor = $status == 'selesai' ? '#0f5132' : ($status == 'dibatalkan' ? '#721c24' : '#664d03');
-                        @endphp
-                        <span style="background: {{ $badgeBg }}; color: {{ $badgeColor }}; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 12px; text-transform: uppercase;">
-                            {{ $order->status }}
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Produk</td>
-                    <td style="font-weight: bold;">: {{ $order->variant->product->name ?? 'Produk' }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Paket & Durasi</td>
-                    <td style="font-weight: 600;">: {{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">No. WhatsApp</td>
-                    <td style="font-weight: 600;">: {{ $order->whatsapp }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Tanggal Order</td>
-                    <td style="font-weight: 600;">: {{ $order->created_at->format('d M Y, H:i') }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Total Bayar</td>
-                    <td style="font-weight: 900; color: #10b981; font-size: 16px;">: Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b; width: 110px;">No Transaksi</td>
+                        <td style="font-weight: 800; color: #1e293b;">: #{{ $order->order_number }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Status Pesanan</td>
+                        <td>: 
+                            @php
+                                $status = strtolower($order->status);
+                                $badgeBg = $status == 'selesai' ? '#d1e7dd' : ($status == 'dibatalkan' ? '#f8d7da' : '#fff3cd');
+                                $badgeColor = $status == 'selesai' ? '#0f5132' : ($status == 'dibatalkan' ? '#721c24' : '#664d03');
+                            @endphp
+                            <span style="background: {{ $badgeBg }}; color: {{ $badgeColor }}; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 12px; text-transform: uppercase;">
+                                {{ $order->status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Produk</td>
+                        <td style="font-weight: bold;">: {{ $order->variant->product->name ?? 'Produk' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Paket & Durasi</td>
+                        <td style="font-weight: 600;">: {{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">No. WhatsApp</td>
+                        <td style="font-weight: 600;">: {{ $order->whatsapp }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Tanggal Order</td>
+                        <td style="font-weight: 600;">: {{ $order->created_at->format('d M Y, H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Total Bayar</td>
+                        <td style="font-weight: 900; color: #10b981; font-size: 16px;">: Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                    </tr>
+                </table>
+            </div>
 
             <div style="margin-top: 20px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 12px; color: #475569;">
-                💡 <strong>Catatan:</strong> Jika status pesanan sudah <strong>Selesai</strong>, detail akun akun premium telah dikirimkan ke WhatsApp Anda.
+                💡 <strong>Catatan:</strong> Jika status pesanan sudah <strong>Selesai</strong>, detail akun premium telah dikirimkan ke WhatsApp Anda.
             </div>
         </div>
 
         <!-- KOLOM KANAN: BUKTI TF & UPLOAD REPEAT -->
-        <div style="flex: 1; min-width: 300px; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div style="flex: 1; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%;">
             <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; color: #1e293b;">
                 🧾 Bukti Pembayaran
             </h3>
@@ -109,9 +112,7 @@
                     Status pesanan ini sudah {{ $order->status }}. Bukti tidak dapat diubah lagi.
                 </div>
             @endif
-
         </div>
-
     </div>
 </div>
-@endsection
+@endsection 
