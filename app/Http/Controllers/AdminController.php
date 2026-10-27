@@ -15,25 +15,28 @@ class AdminController extends Controller
     // ==========================================
     // 1. DASHBOARD / STATISTIK PENJUALAN
     // ==========================================
-    public function index()
-    {
-        // Hitung Total Akun Terjual dari Gudang (Pasti Muncul)
-        $totalTerjual = Stock::where('is_available', false)->count(); 
-        
-        // Logika tahan banting agar sistem tidak peduli huruf besar/kecil
-        $statusValid = ['selesai', 'Selesai', 'SELESAI', 'success', 'Success', 'berhasil', 'Lunas'];
-        
-        // Hitung Pendapatan
-        $totalPendapatan = Order::whereIn('status', $statusValid)->sum('total_price');
-        
-        // Tarik Kuitansi
-        $soldOrders = Order::with(['user', 'variant.product'])
-                           ->whereIn('status', $statusValid)
-                           ->latest()
-                           ->get();
-        
-        return view('admin.dashboard', compact('totalTerjual', 'totalPendapatan', 'soldOrders'));
+    public function index(Request $request)
+{
+    // Mulai query pesanan yang sudah selesai (sesuaikan status sukses di sistem Anda)
+    $query = Order::whereIn('status', ['selesai', 'success']);
+
+    // Filter berdasarkan Bulan jika dipilih
+    if ($request->filled('bulan')) {
+        $query->whereMonth('created_at', $request->bulan);
     }
+
+    // Filter berdasarkan Tahun jika dipilih
+    if ($request->filled('tahun')) {
+        $query->whereYear('created_at', $request->tahun);
+    }
+
+    // Ambil data untuk tabel dan hitung statistik berdasarkan filter
+    $soldOrders = $query->latest()->get();
+    $totalTerjual = $soldOrders->count();
+    $totalPendapatan = $soldOrders->sum('total_price');
+
+    return view('admin.dashboard', compact('soldOrders', 'totalTerjual', 'totalPendapatan'));
+}
 
     // ==========================================
     // 2. KELOLA PRODUK 

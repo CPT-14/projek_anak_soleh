@@ -44,10 +44,33 @@
         .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: #fff; white-space: nowrap; }
 
         .sidebar-section-title { font-size: 11px; font-weight: 600; color: #fff; letter-spacing: 0.5px; margin: 20px 0 8px 12px; }
-        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 14px; font-weight: 500; transition: 0.2s; cursor: pointer; width: 100%; }
+        .sidebar-link { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 14px; font-weight: 500; transition: 0.2s; cursor: pointer; width: 100%; }
         .sidebar-link:hover { background-color: rgba(255, 255, 255, 0.1); }
         .sidebar-link.active { background-color: #FCF1D0; color: #790D16; font-weight: 700; }
         .sidebar-icon { font-size: 16px; }
+
+        /* Notifikasi Pesanan Baru (Sidebar) */
+        .nav-badge {
+            background-color: #ffffff;
+            color: #790D16;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: auto; /* Mendorong badge ke kanan */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        .sidebar-link.active .nav-badge {
+            background-color: #790D16;
+            color: #ffffff;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
 
         /* --- AREA KANAN --- */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; overflow-y: auto; }
@@ -130,9 +153,15 @@
             <a href="{{ route('admin.products') }}" class="sidebar-link {{ request()->routeIs('admin.products') ? 'active' : '' }}">
                 <span class="sidebar-icon">📦</span> Kelola Produk
             </a>
+            
+            <!-- MENU KELOLA PESANAN + BADGE NOTIFIKASI -->
             <a href="{{ route('admin.orders') }}" class="sidebar-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
                 <span class="sidebar-icon">🧾</span> Kelola Pesanan
+                @if(isset($pendingOrdersCount) && $pendingOrdersCount > 0)
+                    <span class="nav-badge">{{ $pendingOrdersCount }}</span>
+                @endif
             </a>
+
             <a href="{{ route('admin.customers') }}" class="sidebar-link {{ request()->routeIs('admin.customers') ? 'active' : '' }}">
                 <span class="sidebar-icon">👥</span> Kelola Customer
             </a>

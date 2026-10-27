@@ -354,16 +354,21 @@
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="input-group">
                         <label>Email Pengiriman</label>
-                        <input type="email" name="email" id="emailInput" placeholder="contoh@gmail.com">
+                        <!-- AUTOFILL DITERAPKAN DI SINI -->
+                        <input type="email" name="email" id="emailInput" placeholder="contoh@gmail.com"
+                               value="{{ auth()->check() ? auth()->user()->email : '' }}">
                     </div>
                     <div class="input-group">
                         <label>Nama Pengguna</label>
-                        <input type="text" name="username" placeholder="Nama Anda" required>
+                        <!-- AUTOFILL DITERAPKAN DI SINI -->
+                        <input type="text" name="username" placeholder="Nama Anda" required
+                               value="{{ auth()->check() ? auth()->user()->name : '' }}">
                     </div>
                     <div class="input-group">
                         <label>No WhatsApp</label>
-                        <!-- BUG FIXED: NAME UDAH DIGANTI JADI contact_wa -->
-                        <input type="tel" name="contact_wa" id="waInput" placeholder="Contoh: 08123456789" required>
+                        <!-- AUTOFILL DITERAPKAN DI SINI -->
+                        <input type="tel" name="contact_wa" id="waInput" placeholder="Contoh: 08123456789" required
+                               value="{{ auth()->check() ? auth()->user()->contact_wa : '' }}">
                     </div>
                 </div>
 
@@ -456,6 +461,10 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
+        // --- 0. CEK STATUS LOGIN USER DARI LARAVEL ---
+        const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+        // ----------------------------------------------
+        
         // --- 1. LOGIKA MODAL PAKET ---
         const btnOpenModal = document.getElementById('btnOpenModal');
         const modalPaket = document.getElementById('modalPaket');
@@ -497,6 +506,13 @@
 
         // Konfirmasi Pilihan
         btnKonfirmasiPaket.addEventListener('click', function() {
+            // === LANGSUNG REDIRECT BILA BELUM LOGIN (TANPA POP-UP) ===
+            if (!isLoggedIn) {
+                window.location.href = "{{ route('register') }}"; 
+                return;
+            }
+            // ========================================================
+
             const selectedRadio = document.querySelector('input[name="modal_variant"]:checked');
             
             if (!selectedRadio) {
@@ -564,5 +580,4 @@
             }
         });
     });
-</script>
-@endsection
+</script

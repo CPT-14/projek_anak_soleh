@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\AccountStock;
+// 1. BUG FIXED: Ubah AccountStock menjadi Stock
+use App\Models\Stock; 
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -14,8 +15,10 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
 
-        // Cari stok akun (di gudang) yang belum terpakai untuk produk ini
-        $stock = AccountStock::where('product_id', $order->product_id)
+        // 2. BUG FIXED: Panggil Stock::where, bukan AccountStock
+        // Catatan: Jika di tabel orders Anda tidak ada product_id (hanya ada product_variant_id), 
+        // Anda mungkin perlu menyesuaikannya menjadi $order->product_variant_id
+        $stock = Stock::where('product_id', $order->product_id ?? $order->product_variant_id)
             ->where('status', 'belum terpakai')
             ->first();
 

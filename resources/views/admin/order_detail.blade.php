@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Detail Pesanan #' . $order->id)
+@section('title', 'Detail Pesanan #' . ($order->order_number ?? $order->id))
 
 @section('styles')
 <style>
@@ -42,7 +42,8 @@
     <a href="{{ route('admin.orders') }}" style="color: #790D16; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;">
         &larr; Kembali ke Kelola Pesanan
     </a>
-    <h1 style="font-size: 24px; font-weight: 800; color: #1e293b;">Detail Pesanan #ORD-{{ $order->id }} 🧾</h1>
+    <!-- MENGUBAH JUDUL AGAR MENAMPILKAN ORDER NUMBER -->
+    <h1 style="font-size: 24px; font-weight: 800; color: #1e293b;">Detail Pesanan #{{ $order->order_number ?? 'ORD-'.$order->id }} 🧾</h1>
     <p style="color: #64748b; font-size: 14px;">Validasi bukti pembayaran dan tentukan akun untuk pelanggan.</p>
 </div>
 
@@ -101,6 +102,16 @@
         <!-- Rincian Produk -->
         <div class="detail-card" style="border-top: 4px solid #10b981;">
             <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 16px;">📦 Rincian Pesanan</h3>
+            
+            <!-- === TAMBAHAN KODE TRANSAKSI DI SINI === -->
+            <div class="info-row">
+                <span class="info-label">Kode Transaksi</span>
+                <span class="info-value" style="font-family: monospace; font-size: 15px; color: #0f172a;">
+                    #{{ $order->order_number ?? '-' }}
+                </span>
+            </div>
+            <!-- ======================================= -->
+            
             <div class="info-row">
                 <span class="info-label">Produk</span>
                 <span class="info-value" style="color: #790D16;">{{ $order->variant->product->name ?? 'Produk Dihapus' }}</span>
@@ -129,8 +140,9 @@
             <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 16px;">🖼️ Bukti Pembayaran</h3>
             @if($order->payment_proof)
                 <div style="text-align: center; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank">
-                        <img src="{{ asset('storage/' . $order->payment_proof) }}" alt="Bukti Transfer" style="max-width: 100%; max-height: 250px; border-radius: 8px; object-fit: contain; cursor: zoom-in;">
+                    <a href="{{ asset('storage/bukti_tf/' . $order->payment_proof) }}" target="_blank">
+                        <!-- Mengasumsikan folder bukti_tf sama seperti di halaman user -->
+                        <img src="{{ asset('storage/bukti_tf/' . $order->payment_proof) }}" alt="Bukti Transfer" style="max-width: 100%; max-height: 250px; border-radius: 8px; object-fit: contain; cursor: zoom-in;">
                     </a>
                     <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Klik gambar untuk memperbesar</p>
                 </div>

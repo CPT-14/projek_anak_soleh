@@ -2,9 +2,54 @@
 @section('title', 'Dashboard Penjualan')
 
 @section('content')
-<div class="welcome-section" style="margin-bottom: 24px;">
-    <h1>Dashboard Penjualan 📈</h1>
-    <p>.</p>
+<div class="welcome-section" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1>Dashboard Penjualan 📈</h1>
+        <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Kelola dan pantau laporan pendapatan bulanan.</p>
+    </div>
+
+    <!-- === FORM FILTER PER BULAN === -->
+    <form action="{{ route('admin.dashboard') }}" method="GET" style="display: flex; gap: 10px; align-items: center; background: #fff; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+        <div>
+            <select name="bulan" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; font-size: 13px; font-weight: 600; outline: none;">
+                <option value="">-- Semua Bulan --</option>
+                <option value="01" {{ request('bulan') == '01' ? 'selected' : '' }}>Januari</option>
+                <option value="02" {{ request('bulan') == '02' ? 'selected' : '' }}>Februari</option>
+                <option value="03" {{ request('bulan') == '03' ? 'selected' : '' }}>Maret</option>
+                <option value="04" {{ request('bulan') == '04' ? 'selected' : '' }}>April</option>
+                <option value="05" {{ request('bulan') == '05' ? 'selected' : '' }}>Mei</option>
+                <option value="06" {{ request('bulan') == '06' ? 'selected' : '' }}>Juni</option>
+                <option value="07" {{ request('bulan') == '07' ? 'selected' : '' }}>Juli</option>
+                <option value="08" {{ request('bulan') == '08' ? 'selected' : '' }}>Agustus</option>
+                <option value="09" {{ request('bulan') == '09' ? 'selected' : '' }}>September</option>
+                <option value="10" {{ request('bulan') == '10' ? 'selected' : '' }}>Oktober</option>
+                <option value="11" {{ request('bulan') == '11' ? 'selected' : '' }}>November</option>
+                <option value="12" {{ request('bulan') == '12' ? 'selected' : '' }}>Desember</option>
+            </select>
+        </div>
+
+        <div>
+            <select name="tahun" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; font-size: 13px; font-weight: 600; outline: none;">
+                @php
+                    $currentYear = date('Y');
+                @endphp
+                <option value="">-- Tahun --</option>
+                @for ($i = $currentYear; $i >= $currentYear - 3; $i--)
+                    <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                @endfor
+            </select>
+        </div>
+
+        <button type="submit" style="background: #790D16; color: white; border: none; padding: 9px 16px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;">
+            Filter
+        </button>
+
+        @if(request('bulan') || request('tahun'))
+            <a href="{{ route('admin.dashboard') }}" style="background: #f1f5f9; color: #64748b; padding: 9px 12px; border-radius: 8px; font-size: 13px; text-decoration: none; font-weight: bold;">
+                Reset
+            </a>
+        @endif
+    </form>
 </div>
 
 <!-- KOTAK STATISTIK PENJUALAN -->
@@ -69,7 +114,7 @@
                 @empty
                 <tr>
                     <td colspan="4" style="padding: 32px; text-align: center; color: #94a3b8; font-style: italic;">
-                        Belum ada data akun yang terjual.
+                        Belum ada data akun yang terjual pada periode ini.
                     </td>
                 </tr>
                 @endforelse

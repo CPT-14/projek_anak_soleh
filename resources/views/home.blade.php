@@ -207,13 +207,13 @@
         <!-- FORM PENCARIAN DITAMBAHKAN DI SINI -->
         <form action="{{ route('home') }}" method="GET" style="margin: 0;">
             <span class="search-icon">🔍</span>
-            <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="search-input" placeholder="Cari layanan premium (cth: Netflix)..." required>
+            <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="search-input" placeholder="Cari layanan premium (contoh: Netflix)..." required>
             
             <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px;">
                 @if(!empty($searchQuery))
                     <a href="{{ route('home') }}" style="background: #e2e8f0; color: #475569; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: flex; align-items: center;">X</a>
                 @endif
-                <button type="submit" class="search-btn">Cari</button>
+                <button type="submit" class="search-btn">🔍</button>
             </div>
         </form>
     </div>
