@@ -8,7 +8,7 @@ use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\Order;
 use App\Models\User;
-
+use App\Models\ProductCategory;
 class AdminController extends Controller
 {
     // ==========================================
@@ -37,10 +37,27 @@ class AdminController extends Controller
     // ==========================================
     // 2. KELOLA PRODUK 
     // ==========================================
-    public function products()
+public function products()
     {
         $products = Product::with('variants')->latest()->get();
-        return view('admin.products', compact('products'));
+        
+        // Ambil kategori dari database baru untuk dikirim ke view
+        $product_categories = ProductCategory::latest()->get();
+        
+        return view('admin.products', compact('products', 'product_categories'));
+    }
+    // --- METHOD CRUD KATEGORI ---
+    public function storeCategory(Request $request)
+    {
+        $request->validate(['name' => 'required|string|unique:product_categories,name']);
+        ProductCategory::create(['name' => $request->name]);
+        return back()->with('success', 'Kategori baru berhasil ditambahkan!');
+    }
+
+    public function destroyCategory($id)
+    {
+        ProductCategory::findOrFail($id)->delete();
+        return back()->with('success', 'Kategori berhasil dihapus!');
     }
 
     public function store(Request $request)

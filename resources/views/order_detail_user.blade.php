@@ -15,11 +15,10 @@
         </div>
     @endif
 
-    <!-- DI SINI KITA GUNAKAN KELAS FLEX-DESKTOP-ROW AGAR DI HP MENJADI 1 KOLOM -->
-    <div class="flex-desktop-row" style="display: flex; gap: 24px;">
+    <div class="flex-desktop-row" style="display: flex; gap: 24px; flex-wrap: wrap;">
         
         <!-- KOLOM KIRI: RINCIAN PESANAN -->
-        <div style="flex: 1.2; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%;">
+        <div style="flex: 1.2; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%; min-width: 320px;">
             <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; color: #1e293b;">
                 📄 Rincian Pesanan
             </h3>
@@ -72,10 +71,20 @@
         </div>
 
         <!-- KOLOM KANAN: BUKTI TF & UPLOAD REPEAT -->
-        <div style="flex: 1; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%;">
+        <div style="flex: 1; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; width: 100%; min-width: 320px;">
             <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; color: #1e293b;">
                 🧾 Bukti Pembayaran
             </h3>
+
+            <!-- === TAMBAHAN KOTAK QRIS (Hanya tampil jika belum selesai/batal) === -->
+            @if(strtolower($order->status) != 'selesai' && strtolower($order->status) != 'dibatalkan')
+            <div style="background: #fafafa; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Silakan Scan QRIS Berikut:</p>
+                <img src="{{ asset('images/QRHARAM.jpeg') }}" alt="QRIS" style="width: 150px; height: 150px; object-fit: contain; margin: 0 auto; background: white; border-radius: 8px; padding: 5px; border: 1px solid #ddd;">
+                <p style="font-size: 11px; color: #64748b; margin-top: 8px;">Mendukung GoPay, OVO, DANA & M-Banking</p>
+            </div>
+            @endif
+            <!-- =============================================================== -->
 
             <!-- Tampilkan Bukti Transfer jika sudah pernah diunggah -->
             @if(!empty($order->payment_proof))
@@ -115,4 +124,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

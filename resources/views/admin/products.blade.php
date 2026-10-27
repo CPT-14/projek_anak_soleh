@@ -1,13 +1,27 @@
 @extends('layouts.admin')
 @section('title', 'Kelola Produk')
 
+@section('styles')
+<style>
+    .category-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #ccc; }
+    .category-list-item:last-child { border-bottom: none; }
+    .btn-delete-cat { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 12px; font-weight: bold; }
+</style>
+@endsection
+
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Kelola Etalase Produk 📦</h1>
-    <p>.</p>
+    <p>Tambah, edit, dan hapus produk serta tipe paket di toko Anda.</p>
 </div>
 
-<!-- FORM MULTI-VARIAN (2 KOLOM) -->
+@if(session('success'))
+    <div style="background: #d1e7dd; color: #0f5132; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: bold;">
+        ✅ {{ session('success') }}
+    </div>
+@endif
+
+<!-- BAGIAN 1: FORM MULTI-VARIAN (2 KOLOM) -->
 <section class="admin-section" style="border-top: 4px solid #790D16; padding: 20px; background: #fff; border-radius: 12px; margin-bottom: 24px;">
     <h2 class="section-title" style="margin-bottom: 16px;">📦 Tambah Produk & Tipe Paket</h2>
     <form action="{{ route('admin.product.store') }}" method="POST">
@@ -21,14 +35,20 @@
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Nama Produk</label>
                     <input type="text" name="name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;" placeholder="Misal: Netflix Premium" required>
                 </div>
+                
+                <!-- DROPDOWN KATEGORI DIAMBIL DARI DATABASE -->
                 <div style="margin-bottom: 12px;">
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Kategori</label>
                     <select name="category" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;" required>
-                        <option value="Streaming">Streaming</option>
-                        <option value="Design & Editing">Design & Editing</option>
-                        <option value="Other">Lainnya</option>
+                        <option value="">-- Pilih Kategori --</option>
+                        @forelse($product_categories as $cat)
+                            <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                        @empty
+                            <option value="" disabled>Belum ada kategori, buat di bagian paling bawah!</option>
+                        @endforelse
                     </select>
                 </div>
+                
                 <div style="margin-bottom: 12px;">
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">URL Gambar (Opsional)</label>
                     <input type="url" name="image" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;">
@@ -69,24 +89,23 @@
     </form>
 </section>
 
-<!-- DAFTAR ETALASE -->
-<section class="admin-section" style="padding: 20px; background: #fff; border-radius: 12px;">
+<!-- BAGIAN 2: DAFTAR ETALASE -->
+<section class="admin-section" style="padding: 20px; background: #fff; border-radius: 12px; margin-bottom: 24px;">
     <h2 class="section-title" style="margin-bottom: 16px;">📋 Daftar Etalase Aktif</h2>
     <div>
         <?php if($products->isEmpty()): ?>
             <p style="color: gray; text-align: center;">Belum ada produk.</p>
         <?php else: ?>
-            <?php foreach($products as$product): ?>
-            <div style="border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <?php foreach($products as $product): ?>
+            <div style="border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                 <div>
                     <h4 style="font-size: 16px; font-weight: 700; color: #790D16; margin: 0;"><?php echo e($product->name); ?></h4>
-                    <p style="font-size: 12px; color: gray; margin: 4px 0 12px 0;">Kategori: <?php echo e($product->category); ?></p>
+                    <p style="font-size: 12px; color: gray; margin: 4px 0 12px 0;">Kategori: <strong><?php echo e($product->category); ?></strong></p>
                     
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <?php foreach($product->variants as$variant): ?>
+                        <?php foreach($product->variants as $variant): ?>
                             <span style="background: #fef0e6; color: #e87c2b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">
                                 <?php echo e($variant->name); ?> (<?php echo e($variant->duration); ?>) - Rp <?php echo e(number_format($variant->price, 0, ',', '.')); ?>
-
                             </span>
                         <?php endforeach; ?>
                     </div>
@@ -103,6 +122,44 @@
             </div>
             <?php endforeach; ?>
         <?php endif; ?>
+    </div>
+</section>
+
+<!-- BAGIAN 3: KOTAK CRUD KATEGORI (DI PALING BAWAH) -->
+<section class="admin-section" style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px dashed #cbd5e1;">
+    <h2 class="section-title" style="margin-bottom: 12px; color: #1e293b;">🏷️ Kelola Kategori Produk</h2>
+    <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Tambahkan kategori baru di sini agar muncul sebagai pilihan di form "Tambah Produk" di atas.</p>
+    
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <!-- Form Tambah Kategori -->
+        <div style="flex: 1; min-width: 280px;">
+            <form action="{{ route('admin.category.store') }}" method="POST">
+                @csrf
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Nama Kategori Baru</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="name" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc;" placeholder="Cth: Streaming, Edukasi" required>
+                    <button type="submit" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Tambah</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- List Kategori -->
+        <div style="flex: 1; min-width: 280px;">
+            <h4 style="font-size: 13px; color: #64748b; margin-bottom: 8px;">Daftar Kategori Tersedia:</h4>
+            <div style="max-height: 200px; overflow-y: auto; background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                @forelse($product_categories as $cat)
+                    <div class="category-list-item">
+                        <span style="font-size: 14px; font-weight: 600; color: #333;">{{ $cat->name }}</span>
+                        <form action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Hapus kategori {{ $cat->name }}?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn-delete-cat">Hapus</button>
+                        </form>
+                    </div>
+                @empty
+                    <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 10px 0;">Belum ada kategori yang dibuat.</p>
+                @endforelse
+            </div>
+        </div>
     </div>
 </section>
 
