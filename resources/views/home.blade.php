@@ -79,6 +79,15 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     
+    /* --- TOMBOL SEARCH (DI DALAM BAR) --- */
+    .search-btn {
+        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+        background: #111; color: white; border: none; 
+        padding: 8px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;
+        transition: 0.2s;
+    }
+    .search-btn:hover { background: #333; }
+
     /* --- RECENT CHIPS --- */
     .recent-chips-container {
         max-width: 800px;
@@ -118,24 +127,18 @@
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .section-title { font-size: 18px; font-weight: 700; }
     
-    /* --- PRODUCT GRID RESPONSIVE (DIUBAH JADI 2 KOLOM DI HP) --- */
+    /* --- PRODUCT GRID RESPONSIVE --- */
     .product-grid { 
         display: grid; 
-        grid-template-columns: repeat(2, 1fr); /* Langsung 2 kolom di layar HP */
+        grid-template-columns: repeat(2, 1fr); 
         gap: 12px; 
     }
     
     @media (min-width: 768px) { 
-        .product-grid { 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 20px; 
-        } 
+        .product-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } 
     }
     @media (min-width: 1024px) { 
-        .product-grid { 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 24px; 
-        } 
+        .product-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; } 
     }
 
     /* -- KARTU PRODUK -- */
@@ -152,35 +155,14 @@
     .product-card:hover { transform: translateY(-3px); }
     
     .product-icon { 
-        width: 100%; 
-        height: 140px; 
-        object-fit: cover; 
-        background-color: white; 
+        width: 100%; height: 140px; object-fit: cover; background-color: white; 
     }
     
-    .product-info { 
-        flex: 1; display: flex; flex-direction: column; 
-        padding: 12px; 
-    }
-    .product-name { 
-        font-size: 14px; 
-        font-weight: 700; color: #111; margin-bottom: 4px; 
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    } 
-    .product-desc { 
-        font-size: 11px; color: #777; line-height: 1.4; margin-bottom: 8px; 
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    } 
-    .product-price { 
-        font-size: 14px; font-weight: 800; color: #790D16; margin-bottom: 8px; 
-    }
-    .btn-detail { 
-        background-color: #790D16; color: white; border: none; 
-        padding: 8px 16px; 
-        border-radius: 20px; font-size: 11px; font-weight: 600; 
-        cursor: pointer; text-decoration: none; text-align: center;
-        width: 100%; 
-    }
+    .product-info { flex: 1; display: flex; flex-direction: column; padding: 12px; }
+    .product-name { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } 
+    .product-desc { font-size: 11px; color: #777; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } 
+    .product-price { font-size: 14px; font-weight: 800; color: #790D16; margin-bottom: 8px; }
+    .btn-detail { background-color: #790D16; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; width: 100%; }
 
     @media (min-width: 768px) {
         .product-icon { height: 200px; }
@@ -191,16 +173,9 @@
         .btn-detail { width: auto; align-self: flex-start; padding: 10px 24px; font-size: 13px; }
     }
 
-    /* --- RESPONSIVE MEDIA QUERIES (MOBILE) --- */
     @media (max-width: 768px) {
-        .banner-container {
-            border-radius: 8px; 
-            margin-bottom: 20px;
-        }
-        .search-band {
-            padding: 20px 15px;
-            margin-bottom: 25px;
-        }
+        .banner-container { border-radius: 8px; margin-bottom: 20px; }
+        .search-band { padding: 20px 15px; margin-bottom: 25px; }
         .home-container { padding: 10px; }
     }
 </style>
@@ -208,7 +183,6 @@
 
 @section('content')
 
-<!-- NOTIFIKASI SUKSES -->
 @if(session('success'))
 <div style="background-color: #d1e7dd; color: #0f5132; padding: 16px; margin-bottom: 24px; text-align: center;">
     ✅ {{ session('success') }}
@@ -216,13 +190,8 @@
 @endif  
 
 <div class="banner-container">
-    <!-- Slide 1 -->
     <div class="slide active" style="background-image: url('{{ asset('images/banner1.jpeg') }}');"></div>
-    
-    <!-- Slide 2 -->
     <div class="slide" style="background-image: url('{{ asset('images/banner2.jpeg') }}');"></div>
-    
-    <!-- Slide 3 -->
     <div class="slide" style="background-image: url('{{ asset('images/banner3.jpeg') }}');"></div>
 
     <div class="banner-dots">
@@ -232,11 +201,21 @@
     </div>
 </div>
 
-<!-- BAND PENCARIAN & RECENT (BACKGROUND MERAH PENUH) -->
+<!-- BAND PENCARIAN & RECENT -->
 <div class="search-band">
     <div class="search-container">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" placeholder="Cari layanan premium...">
+        <!-- FORM PENCARIAN DITAMBAHKAN DI SINI -->
+        <form action="{{ route('home') }}" method="GET" style="margin: 0;">
+            <span class="search-icon">🔍</span>
+            <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="search-input" placeholder="Cari layanan premium (cth: Netflix)..." required>
+            
+            <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px;">
+                @if(!empty($searchQuery))
+                    <a href="{{ route('home') }}" style="background: #e2e8f0; color: #475569; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: flex; align-items: center;">X</a>
+                @endif
+                <button type="submit" class="search-btn">Cari</button>
+            </div>
+        </form>
     </div>
     
     @if(isset($recentViews) && count($recentViews) > 0)
@@ -252,6 +231,15 @@
 
 <!-- KATALOG PRODUK BAWAH -->
 <div class="home-container">
+    
+    <!-- INFO PENCARIAN -->
+    @if(!empty($searchQuery))
+    <div style="text-align: center; margin-bottom: 24px; padding: 12px; background: #fff3cd; color: #856404; border-radius: 8px;">
+        Menampilkan hasil pencarian untuk: <strong>"{{ $searchQuery }}"</strong> 
+        (Ditemukan {{ $products->count() }} produk)
+    </div>
+    @endif
+
     <div class="categories">
         <button class="kategori-btn active" data-filter="all">Semua layanan</button>
         @foreach($categories as $category)
@@ -302,7 +290,9 @@
                 </div>
             </div>
         @empty
-            <p>Belum ada produk.</p>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
+                Maaf, tidak ada produk yang ditemukan.
+            </div>
         @endforelse
     </div>
 </div>
@@ -310,7 +300,7 @@
 
 @section('scripts')
 <script>
-    // --- 1. SCRIPT UNTUK SLIDER BANNER (7 DETIK) ---
+    // --- 1. SCRIPT UNTUK SLIDER BANNER ---
     let currentSlideIndex = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');

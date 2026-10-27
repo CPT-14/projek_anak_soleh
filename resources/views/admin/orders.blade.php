@@ -1,119 +1,126 @@
 @extends('layouts.admin')
+
 @section('title', 'Kelola Pesanan')
 
 @section('styles')
 <style>
-    /* Card Pesanan Model Vertikal (Nyaman di HP & Laptop) */
-    .order-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    /* Styling khusus untuk tombol filter pesanan */
+    .filter-btn-group {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
-        transition: transform 0.2s;
+        gap: 10px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
     }
-    .order-card:hover {
-        border-color: #cbd5e1;
-    }
-    @media (min-width: 768px) {
-        .order-card {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-    }
-    
-    .status-badge {
-        padding: 6px 14px;
+    .btn-filter {
+        padding: 8px 16px;
         border-radius: 20px;
-        font-size: 12px;
-        font-weight: 700;
-        display: inline-block;
-        text-transform: uppercase;
-    }
-    .status-selesai { background: var(--badge-green-bg); color: var(--badge-green-text); }
-    .status-menunggu { background: #fffbeb; color: #b45309; }
-    .status-diproses { background: #eff6ff; color: #1d4ed8; }
-    .status-batal { background: var(--badge-red-bg); color: var(--badge-red-text); }
-    
-    .btn-detail {
-        background: #790D16;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: 700;
-        font-size: 14px;
-        display: inline-block;
-        text-align: center;
         transition: 0.2s;
-        box-shadow: 0 4px 10px rgba(121, 13, 22, 0.15);
+        border: 1px solid #d1d5db;
+        color: #4b5563;
+        background: white;
     }
-    .btn-detail:hover {
-        background: #5e0911;
-        transform: translateY(-1px);
-    }
+    .btn-filter:hover { background: #f3f4f6; }
+    
+    /* Warna tombol saat aktif diklik */
+    .btn-filter.active-all { background: #1e293b; color: white; border-color: #1e293b; }
+    .btn-filter.active-menunggu { background: #f59e0b; color: white; border-color: #f59e0b; }
+    .btn-filter.active-diproses { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .btn-filter.active-selesai { background: #10b981; color: white; border-color: #10b981; }
 </style>
 @endsection
 
 @section('content')
-<div style="margin-bottom: 24px;">
-    <h1 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">Kelola Pesanan 🛒</h1>
-    <p style="color: #64748b; font-size: 14px;">.</p>
+<div class="welcome-section" style="margin-bottom: 24px;">
+    <h1>Daftar Pesanan Masuk 🧾</h1>
+    <p>Pantau transaksi pelanggan, verifikasi pembayaran, dan ubah status pesanan.</p>
 </div>
 
-@forelse($orders as $order)
-    <div class="order-card">
-        <div>
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-                <span style="font-weight: 800; font-size: 16px; color: #1e293b;">#ORD-{{ $order->id }}</span>
-                
-                @php
-                    $status = strtolower($order->status);
-                    if($status === 'selesai' || $status === 'success') {
-                        $badgeClass = 'status-selesai';
-                        $statusText = 'Selesai';
-                    } elseif($status === 'menunggu pembayaran') {
-                        $badgeClass = 'status-menunggu';
-                        $statusText = 'Menunggu';
-                    } elseif($status === 'diproses') {
-                        $badgeClass = 'status-diproses';
-                        $statusText = 'Diproses';
-                    } else {
-                        $badgeClass = 'status-batal';
-                        $statusText = $status;
-                    }
-                @endphp
-                <span class="status-badge {{ $badgeClass }}">{{ $statusText }}</span>
-            </div>
-            
-            <div style="font-size: 14px; color: #334155; margin-bottom: 4px;">
-                <strong>Pembeli:</strong> {{ $order->user->name ?? 'User Dihapus' }} <span style="color: #94a3b8;">({{ $order->user->email ?? '-' }})</span>
-            </div>
-            
-            <div style="font-size: 14px; color: #475569; margin-bottom: 6px;">
-                <strong>Produk:</strong> <span style="color: #790D16; font-weight: 700;">{{ $order->variant->product->name ?? '-' }}</span> — {{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})
-            </div>
-            
-            <div style="font-size: 13px; color: #94a3b8;">
-                Tanggal: {{ $order->created_at->format('d M Y, H:i') }} | Total: <strong style="color: #10b981;">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>
-            </div>
-        </div>
+<!-- TOMBOL FILTER STATUS -->
+@php $currentStatus = $filterStatus ?? 'all'; @endphp
+<div class="filter-btn-group">
+    <a href="{{ route('admin.orders', ['status' => 'all']) }}" 
+       class="btn-filter {{ $currentStatus == 'all' ? 'active-all' : '' }}">
+       Semua Pesanan
+    </a>
+    
+    <a href="{{ route('admin.orders', ['status' => 'menunggu pembayaran']) }}" 
+       class="btn-filter {{ $currentStatus == 'menunggu pembayaran' ? 'active-menunggu' : '' }}">
+       ⏳ Menunggu Pembayaran
+    </a>
+    
+    <a href="{{ route('admin.orders', ['status' => 'diproses']) }}" 
+       class="btn-filter {{ $currentStatus == 'diproses' ? 'active-diproses' : '' }}">
+       🔍 Diproses (Cek Pembayaran)
+    </a>
+    
+    <a href="{{ route('admin.orders', ['status' => 'selesai']) }}" 
+       class="btn-filter {{ $currentStatus == 'selesai' ? 'active-selesai' : '' }}">
+       ✅ Selesai (Akun Terkirim)
+    </a>
+</div>
 
-        <div>
-            <a href="{{ route('admin.order.detail', $order->id) }}" class="btn-detail">
-                Lihat Detail &rarr;
-            </a>
-        </div>
+<!-- TABEL PESANAN -->
+<section class="admin-section" style="border-top: 4px solid var(--brand-color); background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div class="table-responsive">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                    <th style="padding: 12px;">ID / Tgl</th>
+                    <th style="padding: 12px;">Pelanggan</th>
+                    <th style="padding: 12px;">Produk & Total</th>
+                    <th style="padding: 12px;">Status</th>
+                    <th style="padding: 12px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($orders as $order)
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 14px;">
+                        <strong style="color: var(--brand-color);">{{ $order->order_number }}</strong><br>
+                        <span style="font-size: 11px; color: #64748b;">{{ $order->created_at->format('d M Y, H:i') }}</span>
+                    </td>
+                    <td style="padding: 14px;">
+                        <span style="font-weight: 600;">{{ $order->user->name ?? 'User Dihapus' }}</span><br>
+                        <span style="font-size: 12px; color: #64748b;">{{ $order->whatsapp ?? '-' }}</span>
+                    </td>
+                    <td style="padding: 14px;">
+                        <span style="font-size: 13px; font-weight: 600;">{{ $order->variant->product->name ?? 'Produk Dihapus' }}</span><br>
+                        <span style="font-size: 12px; color: #64748b;">{{ $order->variant->name ?? '-' }} ({{ $order->variant->duration ?? '-' }})</span><br>
+                        <span style="font-size: 13px; font-weight: 800; color: #10b981;">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                    </td>
+                    <td style="padding: 14px;">
+                        @if($order->status === 'selesai' || strtolower($order->status) === 'success')
+                            <span style="background: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;">Selesai</span>
+                        @elseif($order->status === 'menunggu pembayaran')
+                            <span style="background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;">Menunggu</span>
+                        @elseif($order->status === 'diproses')
+                            <span style="background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;">Diproses</span>
+                        @else
+                            <span style="background: #f8d7da; color: #842029; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;">{{ ucfirst($order->status) }}</span>
+                        @endif
+                    </td>
+                    <td style="padding: 14px;">
+                        <a href="{{ route('admin.order.detail', $order->id) }}" style="background: #2563eb; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block;">
+                            Lihat Detail →
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" style="padding: 40px; text-align: center; color: #94a3b8;">
+                        @if($currentStatus !== 'all')
+                            Tidak ada pesanan dengan status "<strong>{{ $currentStatus }}</strong>".
+                        @else
+                            Belum ada transaksi sama sekali.
+                        @endif
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-@empty
-    <div style="background: #fff; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 40px; text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
-        <p style="color: #64748b; font-size: 15px; margin: 0;">Belum ada data pesanan yang masuk.</p>
-    </div>
-@endforelse
+</section>
 @endsection

@@ -26,7 +26,7 @@
         body { background-color: var(--bg-body); color: var(--text-dark); -webkit-font-smoothing: antialiased; min-height: 100vh; }
 
         /* ========================================================
-           SISTEM FLEX UI & RESPONSIVE GLOBAL (BARU DITAMBAHKAN)
+           SISTEM FLEX UI & RESPONSIVE GLOBAL
            ======================================================== */
         .container-responsive {
             width: 100%;
@@ -74,12 +74,12 @@
         .brand { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: white; text-decoration: none; }
         .brand-icon { width: 28px; height: 28px; background-color: var(--brand-color); color: var(--brand-hover); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: white; z-index: 1000; transition: left 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: white; z-index: 1000; transition: left 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar.active { left: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: 0.3s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
         
-        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
         .sidebar-header .brand { color: var(--brand-hover); }
         .sidebar-header .brand-icon { background-color: var(--brand-hover); color: white; }
         .close-btn { background: none; border: none; font-size: 20px; color: #555; cursor: pointer; }
@@ -89,6 +89,9 @@
         .sidebar-menu a:hover, .sidebar-menu button:hover { background-color: #fcf4f5; color: var(--brand-hover); }
         .sidebar-menu i { font-size: 18px; width: 20px; text-align: center; color: var(--text-muted); }
         .sidebar-menu a:hover i, .sidebar-menu button:hover i { color: var(--brand-hover); }
+
+        /* Label Khusus di Sidebar */
+        .sidebar-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; padding: 10px 24px; margin-top: 10px; }
 
         /* POPUP PROFILE */
         .header-profile { position: relative; cursor: pointer; }
@@ -134,6 +137,7 @@
         </div>
         
         <div class="sidebar-menu">
+            <div class="sidebar-label">Navigasi Utama</div>
             <a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a>
             
             @auth
@@ -146,6 +150,16 @@
                 @endif
                 
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 24px;">
+                
+                <!-- MENU PUSAT BANTUAN DIARAHKAN KE HALAMAN WEB BANTUAN -->
+                <div class="sidebar-label">Layanan Pelanggan</div>
+                <a href="{{ route('bantuan') }}" style="background-color: #f0fdf4; border-left: 4px solid #166534; padding-left: 20px;">
+                    <i class="fa-solid fa-headset" style="color: #166534;"></i> 
+                    <span style="color: #166534;">Pusat Bantuan</span>
+                </a>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 24px;">
+                
                 <form method="POST" action="{{ route('logout') }}" style="margin: 0; width: 100%;">
                     @csrf
                     <button type="submit" style="color: #dc2626;">
@@ -154,7 +168,15 @@
                 </form>
             @else
                 <!-- Menu Jika Belum Login (Guest) -->
+                <div class="sidebar-label">Layanan Pelanggan</div>
+                <a href="{{ route('bantuan') }}" style="background-color: #f0fdf4; border-left: 4px solid #166534; padding-left: 20px;">
+                    <i class="fa-solid fa-headset" style="color: #166534;"></i> 
+                    <span style="color: #166534;">Pusat Bantuan</span>
+                </a>
+                
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 24px;">
+                
+                <div class="sidebar-label">Akun</div>
                 <a href="{{ route('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Masuk</a>
                 <a href="{{ route('register') }}"><i class="fa-solid fa-user-plus"></i> Daftar Akun</a>
             @endauth
@@ -186,6 +208,7 @@
                 <div class="profile-popup" id="profilePopup">
                     <a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a>
                     <a href="{{ route('dashboard') }}"><i class="fa-solid fa-box"></i> Pesanan Saya</a>
+                    <a href="{{ route('bantuan') }}"><i class="fa-solid fa-headset"></i> Pusat Bantuan</a>
                     <a href="{{ route('profile.edit') }}"><i class="fa-solid fa-user"></i> Profile</a>
                     
                     @if(Auth::user()->role === 'admin')

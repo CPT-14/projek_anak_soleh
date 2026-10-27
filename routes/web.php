@@ -14,7 +14,10 @@ use App\Http\Controllers\ProfileController;
 // Route Halaman Utama / Katalog Publik
 Route::get('/', [UserController::class, 'home'])->name('home');
 Route::get('/product/{id}', [UserController::class, 'showProduct'])->name('product.detail');
+Route::get('/', [UserController::class, 'home'])->name('home');
 
+// TAMBAHKAN BARIS INI TEPAT DI BAWAH ROUTE HOME:
+Route::get('/bantuan', [UserController::class, 'bantuan'])->name('bantuan');
 // Route Checkout, Payment, Dashboard User, dan Profile
 Route::middleware('auth')->group(function () {
     Route::post('/order/create', [UserController::class, 'createOrder'])->name('order.create');

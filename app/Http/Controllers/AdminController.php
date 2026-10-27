@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\ProductCategory;
+
 class AdminController extends Controller
 {
     // ==========================================
@@ -37,7 +38,7 @@ class AdminController extends Controller
     // ==========================================
     // 2. KELOLA PRODUK 
     // ==========================================
-public function products()
+    public function products()
     {
         $products = Product::with('variants')->latest()->get();
         
@@ -46,6 +47,7 @@ public function products()
         
         return view('admin.products', compact('products', 'product_categories'));
     }
+
     // --- METHOD CRUD KATEGORI ---
     public function storeCategory(Request $request)
     {
@@ -146,13 +148,19 @@ public function products()
     // ==========================================
     // 3. KELOLA PESANAN & CUSTOMER
     // ==========================================
-    public function orders()
+    public function orders(Request $request)
     {
-        $orders = Order::with(['user', 'variant.product'])->latest()->get();
-        return view('admin.orders', compact('orders'));
+        $filterStatus = $request->query('status');
+        $query = Order::with(['user', 'variant.product'])->latest();
+
+        if ($filterStatus && $filterStatus !== 'all') {
+            $query->where('status', $filterStatus);
+        }
+
+        $orders = $query->get();
+        return view('admin.orders', compact('orders', 'filterStatus'));
     }
 
-    // --- FUNGSI BARU UNTUK HALAMAN DETAIL PESANAN ---
     public function showOrder($id)
     {
         $order = Order::with(['user', 'variant.product'])->findOrFail($id);
@@ -163,16 +171,26 @@ public function products()
     {
         $request->validate(['status' => 'required|string']);
         Order::findOrFail($id)->update(['status' => $request->status]);
-        
         return back()->with('success', 'Status pesanan berhasil diubah!');
     }
 
-    // --- INI FUNGSI CUSTOMERS YANG SEBELUMNYA HILANG ---
     public function customers()
     {
-        $customers = User::where('role', 'user')->latest()->get();
+        // Fitur: Hitung pesanan selesai & tarik 1 pesanan terbaru untuk cek WA pelanggan
+        $customers = User::where('role', 'user')
+            ->withCount(['orders' => function ($query) {
+                $statusValid = ['selesai', 'Selesai', 'SELESAI', 'success', 'Success'];
+                $query->whereIn('status', $statusValid);
+            }])
+            ->with(['orders' => function ($query) {
+                $query->latest()->limit(1); 
+            }])
+            ->latest()
+            ->get();
+            
         return view('admin.customers', compact('customers'));
     }
+
 
     // ==========================================
     // 4. HALAMAN KHUSUS KELOLA STOK VARIAN
