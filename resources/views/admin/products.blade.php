@@ -60,7 +60,7 @@
             </div>
 
             <!-- KANAN: PAKET DINAMIS -->
-            <div style="flex: 1.5; min-width: 400px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+            <div style="flex: 1.5; min-width: 400px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                 <h3 style="font-size: 15px; margin-bottom: 16px;">2. Daftar Paket/Tipe</h3>
                 
                 <div id="variants-container">
@@ -90,33 +90,34 @@
 </section>
 
 <!-- BAGIAN 2: DAFTAR ETALASE -->
-<section class="admin-section" style="padding: 20px; background: #fff; border-radius: 12px; margin-bottom: 24px;">
+<section class="admin-section" style="padding: 20px; background: transparent; margin-bottom: 24px;">
     <h2 class="section-title" style="margin-bottom: 16px;">📋 Daftar Etalase Aktif</h2>
     <div>
         <?php if($products->isEmpty()): ?>
-            <p style="color: gray; text-align: center;">Belum ada produk.</p>
+            <p style="color: gray; text-align: center; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">Belum ada produk.</p>
         <?php else: ?>
             <?php foreach($products as $product): ?>
-            <div style="border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <!-- CARD ETALASE DENGAN BACKGROUND PUTIH -->
+            <div style="background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                 <div>
-                    <h4 style="font-size: 16px; font-weight: 700; color: #790D16; margin: 0;"><?php echo e($product->name); ?></h4>
-                    <p style="font-size: 12px; color: gray; margin: 4px 0 12px 0;">Kategori: <strong><?php echo e($product->category); ?></strong></p>
+                    <h4 style="font-size: 18px; font-weight: 700; color: #790D16; margin: 0;"><?php echo e($product->name); ?></h4>
+                    <p style="font-size: 13px; color: gray; margin: 6px 0 16px 0;">Kategori: <strong><?php echo e($product->category); ?></strong></p>
                     
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <?php foreach($product->variants as $variant): ?>
-                            <span style="background: #fef0e6; color: #e87c2b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                            <span style="background: #fef0e6; color: #e87c2b; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid #fbdcce;">
                                 <?php echo e($variant->name); ?> (<?php echo e($variant->duration); ?>) - Rp <?php echo e(number_format($variant->price, 0, ',', '.')); ?>
                             </span>
                         <?php endforeach; ?>
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <a href="<?php echo e(route('admin.product.edit', $product->id)); ?>" style="background: #e87c2b; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">Edit</a>
+                    <a href="<?php echo e(route('admin.product.edit', $product->id)); ?>" style="background: #e87c2b; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; transition: background 0.2s;">Edit</a>
                     
                     <form action="<?php echo e(route('admin.product.destroy', $product->id)); ?>" method="POST" onsubmit="return confirm('Hapus produk ini beserta seluruh paketnya?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" style="background: #dc3545; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer;">Hapus</button>
+                        <button type="submit" style="background: #dc3545; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s;">Hapus</button>
                     </form>
                 </div>
             </div>
@@ -126,37 +127,37 @@
 </section>
 
 <!-- BAGIAN 3: KOTAK CRUD KATEGORI (DI PALING BAWAH) -->
-<section class="admin-section" style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px dashed #cbd5e1;">
+<section class="admin-section" style="padding: 20px; background: #fff; border-radius: 12px; border: 1px solid #eee; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
     <h2 class="section-title" style="margin-bottom: 12px; color: #1e293b;">🏷️ Kelola Kategori Produk</h2>
     <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Tambahkan kategori baru di sini agar muncul sebagai pilihan di form "Tambah Produk" di atas.</p>
     
     <div style="display: flex; gap: 24px; flex-wrap: wrap;">
         <!-- Form Tambah Kategori -->
-        <div style="flex: 1; min-width: 280px;">
+        <div style="flex: 1; min-width: 280px; background: #fafafa; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
             <form action="{{ route('admin.category.store') }}" method="POST">
                 @csrf
-                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Nama Kategori Baru</label>
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px; color: #334155;">Nama Kategori Baru</label>
                 <div style="display: flex; gap: 8px;">
-                    <input type="text" name="name" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc;" placeholder="Cth: Streaming, Edukasi" required>
-                    <button type="submit" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Tambah</button>
+                    <input type="text" name="name" style="flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px;" placeholder="Cth: Streaming, Edukasi" required>
+                    <button type="submit" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">Tambah</button>
                 </div>
             </form>
         </div>
 
         <!-- List Kategori -->
         <div style="flex: 1; min-width: 280px;">
-            <h4 style="font-size: 13px; color: #64748b; margin-bottom: 8px;">Daftar Kategori Tersedia:</h4>
-            <div style="max-height: 200px; overflow-y: auto; background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <h4 style="font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 12px;">Daftar Kategori Tersedia:</h4>
+            <div style="max-height: 200px; overflow-y: auto; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 @forelse($product_categories as $cat)
                     <div class="category-list-item">
-                        <span style="font-size: 14px; font-weight: 600; color: #333;">{{ $cat->name }}</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #334155;">{{ $cat->name }}</span>
                         <form action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Hapus kategori {{ $cat->name }}?');">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn-delete-cat">Hapus</button>
                         </form>
                     </div>
                 @empty
-                    <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 10px 0;">Belum ada kategori yang dibuat.</p>
+                    <p style="font-size: 13px; color: #94a3b8; text-align: center; margin: 10px 0; font-style: italic;">Belum ada kategori yang dibuat.</p>
                 @endforelse
             </div>
         </div>
@@ -179,7 +180,7 @@
             <div>
                 <input type="number" name="variant_price[]" placeholder="Harga" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required>
             </div>
-            <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">X</button>
+            <button type="button" class="remove-variant" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">X</button>
         `;
         container.appendChild(newRow);
         
@@ -188,4 +189,4 @@
         });
     });
 </script>
-@endsection
+@endsection 

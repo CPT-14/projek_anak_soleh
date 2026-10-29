@@ -15,10 +15,18 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // BUG FIXED: Menggunakan tanda '*' agar variabel dikirim ke SEMUA view tanpa terkecuali
+        // Menyebar jumlah order yang butuh perhatian admin (pending & diproses) ke SEMUA layout
         View::composer('*', function ($view) {
-            $pendingCount = Order::where('status', 'pending')->count();
-            $view->with('pendingOrdersCount', $pendingCount);
+            
+            // Kita coba pakai try-catch untuk berjaga-jaga jika ada migrasi yang belum dijalankan (mencegah error View)
+            try {
+                $pendingCount = Order::whereIn('status', ['pending', 'diproses'])->count();
+                $view->with('pendingOrdersCount', $pendingCount);
+            } catch (\Exception $e) {
+                // Jika tabel orders belum ada, defaultkan ke 0 agar aplikasi tidak crash
+                $view->with('pendingOrdersCount', 0);
+            }
+            
         });
     }
 }

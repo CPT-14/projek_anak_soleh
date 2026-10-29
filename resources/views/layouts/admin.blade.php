@@ -31,13 +31,8 @@
             display: flex; flex-direction: column; padding: 24px 16px;
             transition: left 0.3s ease; flex-shrink: 0; height: 100vh; position: sticky; top: 0; z-index: 1000;
         }
-
         .sidebar-header { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; padding-left: 8px; }
-        
-        .close-btn { 
-            display: none; 
-            background: none; border: none; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.2s; 
-        }
+        .close-btn { display: none; background: none; border: none; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.2s; }
         
         .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo-icon { width: 28px; height: 28px; background-color: var(--brand-color); border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #790D16; font-size: 16px; font-weight: bold; flex-shrink: 0; }
@@ -49,38 +44,18 @@
         .sidebar-link.active { background-color: #FCF1D0; color: #790D16; font-weight: 700; }
         .sidebar-icon { font-size: 16px; }
 
-        /* Notifikasi Pesanan Baru (Sidebar) */
-        .nav-badge {
-            background-color: #ffffff;
-            color: #790D16;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 12px;
-            margin-left: auto; /* Mendorong badge ke kanan */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            animation: pulse 2s infinite;
-        }
-        .sidebar-link.active .nav-badge {
-            background-color: #790D16;
-            color: #ffffff;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+        .nav-badge { background-color: #ffffff; color: #790D16; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: pulse 2s infinite; }
+        .sidebar-link.active .nav-badge { background-color: #790D16; color: #ffffff; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- AREA KANAN --- */
+        .logo-notification { display: inline-flex; align-items: center; background-color: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-left: 8px; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); animation: bounceIn 1.5s infinite alternate; }
+        @keyframes bounceIn { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.8); } }
+
+        /* --- HEADER & AREA KANAN --- */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; overflow-y: auto; }
         .top-header { background-color: var(--header-bg); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-        
-        /* Bagian Kiri Header (Hamburger + Logo untuk HP) */
         .header-left { display: flex; align-items: center; gap: 12px; }
         .menu-toggle { background: none; border: none; font-size: 22px; cursor: pointer; color: #fff; display: none; }
-
-        /* Sembunyikan Logo di Header saat Desktop, Tampilkan saat Mode HP */
         .header-logo { display: none; }
 
         .profile-menu-container { position: relative; display: flex; align-items: center; }
@@ -96,53 +71,63 @@
         .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
         .alert-success { background-color: var(--badge-green-bg); color: var(--badge-green-text); border: 1px solid #bbf7d0; }
         .alert-danger { background-color: var(--badge-red-bg); color: var(--badge-red-text); border: 1px solid #fecaca; }
+        
         .admin-section { background-color: #ffffff; border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 30px; box-shadow: var(--card-shadow); }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+        
         .btn { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
         .btn-primary { background-color: #790D16; color: white; }
-        .btn-danger { background-color: var(--badge-red-text); color: white; padding: 6px 12px; font-size: 12px; }
 
-        /* --- Overlay Latar Gelap --- */
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); z-index: 999;
-            display: none; opacity: 0; transition: opacity 0.3s ease;
-        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
 
-        /* --- PENGATURAN LAYAR HP (MOBILE) --- */
+        /* =========================================
+           SISTEM RESPONSIVE GLOBAL (TABLE TO CARDS)
+           ========================================= */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .table { width: 100%; border-collapse: collapse; }
+        .mobile-cards { display: none; }
+
         @media (max-width: 768px) {
-            .sidebar { 
-                position: fixed; 
-                left: -260px; 
-            }
-            .sidebar.active {
-                left: 0; 
-            }
-            .main-wrapper {
-                width: 100%;
-            }
-            .menu-toggle { display: block; } /* Munculkan hamburger */
-            .close-btn { display: block; } /* Munculkan tanda X di sidebar */
-            .header-logo { display: flex; } /* Munculkan logo dan teks QITSPREM di header */
-            
+            .sidebar { position: fixed; left: -260px; }
+            .sidebar.active { left: 0; }
+            .main-wrapper { width: 100%; }
+            .menu-toggle { display: block; } 
+            .close-btn { display: block; } 
+            .header-logo { display: flex; } 
             .sidebar-overlay.active { display: block; opacity: 1; }
             .container { padding: 16px; }
             .top-header { padding: 16px 16px; }
+
+            /* Ubah Tabel Jadi Kartu di Mobile */
+            .table-responsive { display: none !important; }
+            .mobile-cards { display: flex; flex-direction: column; gap: 16px; }
+            .admin-section { padding: 0 !important; background: transparent !important; border: none !important; box-shadow: none !important; }
         }
+
+        /* Styling Flex Mobile Cards */
+        .mc-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px; }
+        .mc-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; }
+        .mc-body { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #475569; }
+        .mc-body strong { color: #1e293b; }
+        .mc-footer { margin-top: 4px; display: flex; justify-content: stretch; }
+        .mc-footer a, .mc-footer button { width: 100%; text-align: center; }
     </style>
     @yield('styles')
 </head>
 <body>
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <div class="app-layout">
+        
         <aside class="sidebar" id="sidebarMenu">
             <div class="sidebar-header">
                 <button class="close-btn" id="closeSidebar">✕</button>
                 <a href="{{ route('home') }}" class="logo-container">
                     <div class="logo-icon">❖</div>
                     <div class="logo-text">QITSPREM</div>
+                    @if(isset($pendingOrdersCount) && $pendingOrdersCount > 0)
+                        <div class="logo-notification">NEW</div>
+                    @endif
                 </a>
             </div>
 
@@ -153,15 +138,12 @@
             <a href="{{ route('admin.products') }}" class="sidebar-link {{ request()->routeIs('admin.products') ? 'active' : '' }}">
                 <span class="sidebar-icon">📦</span> Kelola Produk
             </a>
-            
-            <!-- MENU KELOLA PESANAN + BADGE NOTIFIKASI -->
-            <a href="{{ route('admin.orders') }}" class="sidebar-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
+            <a href="{{ route('admin.orders') }}" class="sidebar-link {{ request()->routeIs('admin.orders') || request()->routeIs('admin.order.detail') ? 'active' : '' }}">
                 <span class="sidebar-icon">🧾</span> Kelola Pesanan
                 @if(isset($pendingOrdersCount) && $pendingOrdersCount > 0)
                     <span class="nav-badge">{{ $pendingOrdersCount }}</span>
                 @endif
             </a>
-
             <a href="{{ route('admin.customers') }}" class="sidebar-link {{ request()->routeIs('admin.customers') ? 'active' : '' }}">
                 <span class="sidebar-icon">👥</span> Kelola Customer
             </a>
@@ -180,16 +162,17 @@
 
         <div class="main-wrapper">
             <header class="top-header">
-                <!-- Bagian Kiri: Tombol Hamburger + Logo & Tulisan QITSPREM (Muncul di HP) -->
                 <div class="header-left">
                     <button class="menu-toggle" id="openSidebar">☰</button>
                     <a href="{{ route('admin.dashboard') }}" class="logo-container header-logo">
                         <div class="logo-icon">❖</div>
                         <div class="logo-text">QITSPREM</div>
+                        @if(isset($pendingOrdersCount) && $pendingOrdersCount > 0)
+                            <div class="logo-notification">NEW</div>
+                        @endif
                     </a>
                 </div>
                 
-                <!-- Bagian Kanan: Profil Admin -->
                 <div class="profile-menu-container">
                     <button class="user-avatar" id="profile-btn">
                         <img src="https://ui-avatars.com/api/?name=Admin+Profile&background=333&color=fff" alt="Avatar">
@@ -217,18 +200,14 @@
         </div>
     </div>
 
+    <!-- Script Hamburger Menu & Dropdown -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const profileBtn = document.getElementById('profile-btn');
             const dropdownMenu = document.getElementById('dropdown-menu');
             if(profileBtn && dropdownMenu) {
-                profileBtn.addEventListener('click', (e) => { 
-                    e.stopPropagation(); 
-                    dropdownMenu.classList.toggle('show'); 
-                });
-                window.addEventListener('click', () => {
-                    dropdownMenu.classList.remove('show');
-                });
+                profileBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
+                window.addEventListener('click', () => { dropdownMenu.classList.remove('show'); });
             }
 
             const sidebarMenu = document.getElementById('sidebarMenu');
@@ -236,15 +215,8 @@
             const closeSidebarBtn = document.getElementById('closeSidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-            function openSidebar() {
-                sidebarMenu.classList.add('active');
-                sidebarOverlay.classList.add('active');
-            }
-
-            function closeSidebar() {
-                sidebarMenu.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-            }
+            function openSidebar() { sidebarMenu.classList.add('active'); sidebarOverlay.classList.add('active'); }
+            function closeSidebar() { sidebarMenu.classList.remove('active'); sidebarOverlay.classList.remove('active'); }
 
             if(openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
             if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
@@ -252,6 +224,34 @@
         });
     </script>
     
+    <!-- Script Notifikasi Polling Real Time -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setInterval(function() {
+                fetch("{{ route('admin.api.checkOrders') }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        let count = data.count;
+                        const badgeContainer = document.querySelector('a[href="{{ route('admin.orders') }}"]');
+                        let existingBadge = badgeContainer.querySelector('.nav-badge');
+                        
+                        if (count > 0) {
+                            if (!existingBadge) { badgeContainer.insertAdjacentHTML('beforeend', `<span class="nav-badge">${count}</span>`); } 
+                            else { existingBadge.innerText = count; }
+                        } else if (existingBadge) { existingBadge.remove(); }
+
+                        const logoContainers = document.querySelectorAll('.logo-container');
+                        logoContainers.forEach(container => {
+                            let existingNewBadge = container.querySelector('.logo-notification');
+                            if (count > 0) {
+                                if (!existingNewBadge) { container.insertAdjacentHTML('beforeend', '<div class="logo-notification">NEW</div>'); }
+                            } else if (existingNewBadge) { existingNewBadge.remove(); }
+                        });
+                    })
+                    .catch(error => console.error('Error fetching new orders:', error));
+            }, 15000); 
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>

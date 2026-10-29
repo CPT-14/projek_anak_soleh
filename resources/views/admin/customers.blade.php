@@ -1,64 +1,65 @@
 @extends('layouts.admin')
-
 @section('title', 'Kelola Customer')
 
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Kelola Customer 👥</h1>
-    <p>Daftar pengguna pembeli yang terdaftar beserta riwayat keberhasilan transaksinya.</p>
+    <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Daftar pelanggan terdaftar dan riwayat interaksi mereka.</p>
 </div>
 
-<section class="admin-section" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #790D16;">
-    <h2 class="section-title" style="margin-bottom: 20px;">👥 Daftar Pelanggan Aktif</h2>
-    
-    <div class="table-responsive">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+<section style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #cbd5e1;">
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px; background: #ffffff;">
             <thead>
-                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc;">
-                    <th style="padding: 12px; font-weight: 600; color: #475569;">Profil</th>
-                    <th style="padding: 12px; font-weight: 600; color: #475569;">Nama & Kontak</th>
-                    <th style="padding: 12px; font-weight: 600; color: #475569;">Tanggal Daftar</th>
-                    <th style="padding: 12px; font-weight: 600; color: #475569; text-align: center;">Total Transaksi Sukses</th>
+                <tr style="background: #f8fafc;">
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Nama Customer</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Email</th>
+                    
+                    <!-- KOLOM BARU: Total Transaksi Berhasil -->
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700; text-align: center;">Transaksi Berhasil</th>
+                    
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">No. WA (Terakhir)</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Tanggal Bergabung</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($customers as $customer)
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <!-- Avatar Lingkaran -->
-                    <td style="padding: 14px; width: 60px;">
-                        <div style="width: 44px; height: 44px; border-radius: 50%; background-color: #fef0e6; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #e87c2b; font-size: 18px;">
-                            {{ strtoupper(substr($customer->name, 0, 1)) }}
-                        </div>
+                <tr style="background: #ffffff; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; font-weight: 600; color: #334155;">
+                        {{ $customer->name }}
+                    </td>
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; color: #64748b;">
+                        {{ $customer->email }}
                     </td>
                     
-                    <!-- Nama & Email -->
-                    <td style="padding: 14px;">
-                        <h4 style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0 0 4px 0;">{{ $customer->name }}</h4>
-                        <p style="font-size: 13px; color: #64748b; margin: 0;">{{ $customer->email }}</p>
-                    </td>
-                    
-                    <!-- Tanggal Bergabung -->
-                    <td style="padding: 14px;">
-                        <span style="font-size: 13px; color: #475569;">{{ $customer->created_at->format('d M Y') }}</span>
-                    </td>
-                    
-                    <!-- Transaksi Sukses (Hasil dari withCount) -->
-                    <td style="padding: 14px; text-align: center;">
+                    <!-- DATA BARU: Total Transaksi Berhasil -->
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; text-align: center;">
                         @if($customer->orders_count > 0)
-                            <span style="display: inline-block; background: #10b981; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);">
-                                {{ $customer->orders_count }} Transaksi
+                            <span style="background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">
+                                {{ $customer->orders_count }}x
                             </span>
                         @else
-                            <span style="display: inline-block; background: #f1f5f9; color: #94a3b8; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                                Belum ada
-                            </span>
+                            <span style="color: #94a3b8; font-weight: 500; font-size: 13px;">0</span>
                         @endif
+                    </td>
+                    
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; color: #64748b;">
+                        @if($customer->orders->isNotEmpty() && $customer->orders->first()->whatsapp)
+                            <a href="https://wa.me/{{ preg_replace('/^0/', '62', $customer->orders->first()->whatsapp) }}" target="_blank" style="color: #10b981; font-weight: 600; text-decoration: none;">
+                                💬 {{ $customer->orders->first()->whatsapp }}
+                            </a>
+                        @else
+                            <span style="color: #94a3b8; font-style: italic;">Belum ada pesanan</span>
+                        @endif
+                    </td>
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; color: #64748b;">
+                        {{ $customer->created_at->format('d M Y') }}
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
-                        Belum ada customer yang terdaftar.
+                    <td colspan="5" style="padding: 32px; border: 1px solid #cbd5e1; text-align: center; color: #94a3b8; font-style: italic; background: #ffffff;">
+                        Belum ada data customer terdaftar.
                     </td>
                 </tr>
                 @endforelse

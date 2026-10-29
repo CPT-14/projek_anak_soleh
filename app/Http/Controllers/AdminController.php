@@ -91,12 +91,15 @@ class AdminController extends Controller
         return back()->with('success', 'Produk dan Paket berhasil ditambahkan!');
     }
 
-    public function editProduct($id)
+  public function editProduct($id)
     {
         $product = Product::with(['variants'])->findOrFail($id);
-        return view('admin.products_edit', compact('product'));
+        
+        // Ambil data kategori dari database untuk dikirim ke view edit
+        $product_categories = ProductCategory::latest()->get();
+        
+        return view('admin.products_edit', compact('product', 'product_categories'));
     }
-
     public function updateProduct(Request $request, $id)
     {
         $request->validate([
@@ -154,14 +157,22 @@ class AdminController extends Controller
     public function orders(Request $request)
     {
         $filterStatus = $request->query('status');
+        $searchQuery = $request->query('search'); // Tangkap input pencarian
+
         $query = Order::with(['user', 'variant.product'])->latest();
 
+        // 1. Filter Status (Jika ada)
         if ($filterStatus && $filterStatus !== 'all') {
             $query->where('status', $filterStatus);
         }
 
+        // 2. Filter Pencarian Nomor Transaksi (BARU)
+        if ($searchQuery) {
+            $query->where('order_number', 'like', '%' . $searchQuery . '%');
+        }
+
         $orders = $query->get();
-        return view('admin.orders', compact('orders', 'filterStatus'));
+        return view('admin.orders', compact('orders', 'filterStatus', 'searchQuery'));
     }
 
     public function showOrder($id)
@@ -235,5 +246,17 @@ class AdminController extends Controller
     {
         Stock::findOrFail($id)->delete();
         return back()->with('success', 'Stok akun berhasil dihapus!');
+    }
+
+    // ==========================================
+    // 5. FITUR AJAX POLLING (NOTIFIKASI REAL-TIME)
+    // ==========================================
+    public function checkNewOrders()
+    {
+        // Hitung pesanan yang berstatus pending atau diproses
+        $count = Order::whereIn('status', ['pending', 'diproses'])->count();
+        
+        // Kembalikan hasilnya dalam bentuk JSON (agar mudah dibaca oleh JavaScript)
+        return response()->json(['count' => $count]);
     }
 }

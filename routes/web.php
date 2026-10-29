@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function () {
 // ==========================================
 Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // --- RUTE API ADMIN UNTUK NOTIFIKASI REAL-TIME (AJAX POLLING) ---
+    Route::get('/api/check-new-orders', [AdminController::class, 'checkNewOrders'])->name('api.checkOrders');
     
     // Rute Kelola Etalase Produk
     Route::get('/products', [AdminController::class, 'products'])->name('products');

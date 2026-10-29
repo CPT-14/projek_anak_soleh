@@ -71,49 +71,49 @@
     </div>
 </div>
 
-<!-- TABEL RINCIAN AKUN TERJUAL -->
-<section class="admin-section" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-    <h2 style="font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; color: #1e293b;">
+<!-- TABEL RINCIAN AKUN TERJUAL (LATAR PUTIH & PEMBATAS TEGAS) -->
+<section style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #cbd5e1;">
+    <h2 style="font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; color: #1e293b;">
         🛒 Rincian Akun yang Terjual
     </h2>
     
     <div style="overflow-x: auto;">
-        <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px;">
+        <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px; background: #ffffff;">
             <thead>
                 <tr style="background: #f8fafc;">
-                    <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Tanggal Terjual</th>
-                    <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Nama Pembeli</th>
-                    <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Produk & Tipe Paket</th>
-                    <th style="padding: 14px; border-bottom: 2px solid #e2e8f0; color: #475569;">Harga Terjual</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Tanggal Terjual</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Nama Pembeli</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Produk & Tipe Paket</th>
+                    <th style="padding: 14px; border: 1px solid #cbd5e1; color: #475569; font-weight: 700;">Harga Terjual</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($soldOrders as $order)
-                <tr style="transition: all 0.2s;">
+                <tr style="background: #ffffff; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                     <!-- Tanggal -->
-                    <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; color: #64748b;">
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; color: #64748b;">
                         {{ $order->created_at->format('d M Y, H:i') }}
                     </td>
                     
                     <!-- Nama User -->
-                    <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #334155;">
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; font-weight: 600; color: #334155;">
                         {{ $order->user->name ?? 'User Telah Dihapus' }}
                     </td>
                     
                     <!-- Produk & Varian -->
-                    <td style="padding: 14px; border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 14px; border: 1px solid #cbd5e1;">
                         <div style="color: #2563eb; font-weight: 700;">{{ $order->variant->product->name ?? 'Produk Dihapus' }}</div>
                         <div style="font-size: 12px; color: #64748b; margin-top: 4px;">{{ $order->variant->name ?? '' }} ({{ $order->variant->duration ?? '' }})</div>
                     </td>
                     
                     <!-- Harga -->
-                    <td style="padding: 14px; border-bottom: 1px solid #f1f5f9; font-weight: 800; color: #10b981;">
+                    <td style="padding: 14px; border: 1px solid #cbd5e1; font-weight: 800; color: #10b981;">
                         Rp {{ number_format($order->total_price, 0, ',', '.') }}
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="padding: 32px; text-align: center; color: #94a3b8; font-style: italic;">
+                    <td colspan="4" style="padding: 32px; border: 1px solid #cbd5e1; text-align: center; color: #94a3b8; font-style: italic; background: #ffffff;">
                         Belum ada data akun yang terjual pada periode ini.
                     </td>
                 </tr>

@@ -107,22 +107,47 @@
     }
     .recent-chip:hover { background: #f8f9fa; transform: translateY(-2px); }
 
-    /* --- KATEGORI PILLS --- */
+    /* --- KATEGORI PILLS DENGAN FITUR SLIDE HORIZONTAL --- */
     .categories { 
-        display: flex; gap: 12px; margin-bottom: 32px; 
-        flex-wrap: wrap; 
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 5px; 
+        display: flex; 
+        gap: 12px; 
+        margin-bottom: 32px; 
+        overflow-x: auto; /* Kunci utamanya di sini: mengizinkan scroll ke samping */
+        -webkit-overflow-scrolling: touch; /* Efek swipe mulus di iOS */
+        padding-bottom: 10px; /* Jarak untuk scrollbar */
+        flex-wrap: nowrap; /* Jangan biarkan turun ke baris baru */
     }
+    
+    /* Menyembunyikan tampilan scrollbar agar terlihat seperti App */
+    .categories::-webkit-scrollbar {
+        height: 6px; /* Tinggi scrollbar horizontal */
+    }
+    .categories::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+        border-radius: 10px;
+    }
+    .categories::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 10px;
+    }
+    .categories::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; 
+    }
+
     .kategori-btn { 
-        padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; 
-        cursor: pointer; border: none; transition: 0.2s; 
-        white-space: nowrap; 
+        padding: 8px 20px; 
+        border-radius: 30px; 
+        font-size: 13px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        border: none; 
+        transition: 0.2s; 
+        white-space: nowrap; /* Teks tidak boleh patah ke bawah */
+        flex-shrink: 0; /* Mencegah tombol mengecil saat dipaksa sebaris */
     }
     .kategori-btn.active { background-color: #790D16; color: white; }
-    .kategori-btn.inactive { background-color: transparent; color: #555; }
-    .kategori-btn.inactive:hover { background-color: #f0f0f0; }
+    .kategori-btn.inactive { background-color: #e2e8f0; color: #475569; }
+    .kategori-btn.inactive:hover { background-color: #cbd5e1; }
 
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .section-title { font-size: 18px; font-weight: 700; }
@@ -204,7 +229,7 @@
 <!-- BAND PENCARIAN & RECENT -->
 <div class="search-band">
     <div class="search-container">
-        <!-- FORM PENCARIAN DITAMBAHKAN DI SINI -->
+        <!-- FORM PENCARIAN -->
         <form action="{{ route('home') }}" method="GET" style="margin: 0;">
             <span class="search-icon">🔍</span>
             <input type="text" name="search" value="{{ $searchQuery ?? '' }}" class="search-input" placeholder="Cari layanan premium (contoh: Netflix)..." required>
@@ -240,7 +265,8 @@
     </div>
     @endif
 
-    <div class="categories">
+    <!-- MENU KATEGORI SLIDER HORIZONTAL -->
+    <div class="categories" id="categoryContainer">
         <button class="kategori-btn active" data-filter="all">Semua layanan</button>
         @foreach($categories as $category)
             @if($category)
@@ -352,7 +378,38 @@
                     card.style.display = 'none';
                 }
             });
+            
+            // Opsional: Gulir slider kategori agar tombol yang diklik berada di tengah layar HP
+            this.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         });
+    });
+
+    // --- 3. SCRIPT DRAG UNTUK SLIDER KATEGORI DI DESKTOP ---
+    const slider = document.getElementById('categoryContainer');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'default';
+    });
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'default';
+    });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // Angka 2 untuk mempercepat geseran (scroll speed)
+        slider.scrollLeft = scrollLeft - walk;
     });
 </script>
 @endsection

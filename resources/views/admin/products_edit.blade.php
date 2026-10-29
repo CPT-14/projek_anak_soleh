@@ -4,7 +4,7 @@
 @section('content')
 <div class="welcome-section" style="margin-bottom: 24px;">
     <h1>Edit Produk: {{ $product->name }} ✏️</h1>
-    <p>.</p>
+    <p>Ubah detail produk dan tipe paket di toko Anda.</p>
 </div>
 
 <section class="admin-section" style="border-top: 4px solid #790D16; padding: 20px; background: #fff; border-radius: 12px;">
@@ -20,14 +20,22 @@
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Nama Produk</label>
                     <input type="text" name="name" value="{{ $product->name }}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;" required>
                 </div>
+
+                <!-- DROPDOWN KATEGORI DINAMIS DARI DATABASE -->
                 <div style="margin-bottom: 12px;">
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Kategori</label>
                     <select name="category" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;" required>
-                        <option value="Streaming" {{ $product->category == 'Streaming' ? 'selected' : '' }}>Streaming</option>
-                        <option value="Design & Editing" {{ $product->category == 'Design & Editing' ? 'selected' : '' }}>Design & Editing</option>
-                        <option value="Other" {{ $product->category == 'Other' ? 'selected' : '' }}>Lainnya</option>
+                        <option value="">-- Pilih Kategori --</option>
+                        @forelse($product_categories as $cat)
+                            <option value="{{ $cat->name }}" {{ $product->category == $cat->name ? 'selected' : '' }}>
+                                {{ $cat->name }}
+                            </option>
+                        @empty
+                            <option value="" disabled>Belum ada kategori, buat terlebih dahulu di menu Tambah Produk!</option>
+                        @endforelse
                     </select>
                 </div>
+
                 <div style="margin-bottom: 12px;">
                     <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">URL Gambar (Opsional)</label>
                     <input type="url" name="image" value="{{ $product->image }}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;">
@@ -43,8 +51,8 @@
                 <h3 style="font-size: 15px; margin-bottom: 16px;">2. Daftar Paket</h3>
                 
                 <div id="variants-container">
-                    <?php if(isset($product->variants)): ?>
-                        <?php foreach($product->variants as$variant): ?>
+                    @if(isset($product->variants))
+                        @foreach($product->variants as $variant)
                         <div class="variant-row" style="background: #fdfdfd; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
                             <input type="hidden" name="variant_id[]" value="{{ $variant->id }}">
                             
@@ -69,8 +77,8 @@
                                 ⚙️ Kelola Stok Akun
                             </a>
                         </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        @endforeach
+                    @endif
                 </div>
                 
                 <button type="button" id="add-variant-btn" style="background: transparent; border: 1px dashed #790D16; color: #790D16; font-weight: 600; padding: 12px 16px; border-radius: 6px; cursor: pointer; margin-top: 8px; width: 100%;">
